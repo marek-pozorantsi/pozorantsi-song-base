@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Pozorantsi Song Base 1.2 Secure RC4.1</title>
+<title>Pozorantsi Song Base 1.2 Secure RC4.2</title>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#07111f">
@@ -393,7 +393,7 @@ html,body{overflow-x:hidden!important;max-width:100%!important}
   <p class="admin-help">Najpierw utwórz konto w Firebase Authentication i skopiuj jego UID. Tutaj przypisz imię, rolę oraz ewentualny termin dostępu.</p>
   <div class="profile-form">
     <label>UID konta Firebase</label><input id="profileUidInput" placeholder="Wklej UID użytkownika">
-    <div class="profile-grid"><div><label>Imię</label><input id="profileNameInput" placeholder="np. Maciek"></div><div><label>Rola</label><select id="profileRoleInput" onchange="toggleGuestProfileFields()"><option value="member">Członek zespołu</option><option value="vocalist">Wokalistka</option><option value="guest">Gość / przesłuchanie</option></select></div></div>
+    <div class="profile-grid"><div><label>Imię</label><input id="profileNameInput" placeholder="np. Maciek"></div><div><label>Rola</label><select id="profileRoleInput" onchange="toggleGuestProfileFields()"><option value="member">Członek zespołu</option><option value="vocalist">Wokalistka</option><option value="guest">Gość</option></select></div></div>
     <div id="guestProfileFields" style="display:none"><div class="guest-note">Gość zobaczy cały repertuar i setlisty, ale wyłącznie do odczytu. Nie ma dostępu do Poczekalni. Gdy data minie, reguły Firebase automatycznie zablokują dostęp.</div><div><label>Dostęp ważny do</label><input id="profileExpiryInput" type="date"></div></div>
     <label class="profile-active"><input id="profileActiveInput" type="checkbox" checked> Konto aktywne</label>
     <div class="modal-actions"><button class="top-btn" onclick="clearProfileForm()">Wyczyść</button><button class="add-btn" style="padding:0 18px" onclick="saveProfile()">Zapisz profil</button></div>
