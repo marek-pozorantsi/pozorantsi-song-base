@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Pozorantsi Song Base 1.2 Secure RC4</title>
+<title>Pozorantsi Song Base 1.2 Secure RC4.1</title>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#07111f">
@@ -390,11 +390,11 @@ html,body{overflow-x:hidden!important;max-width:100%!important}
   <button onclick="adminImportBackup()">Przywróć kopię</button>
 </div>
 <div id="adminUsersPanel" style="display:none">
-  <p class="admin-help">Najpierw utwórz konto w Firebase Authentication i skopiuj jego UID. Tutaj przypisz imię, rolę oraz ewentualny termin i pakiet przesłuchania.</p>
+  <p class="admin-help">Najpierw utwórz konto w Firebase Authentication i skopiuj jego UID. Tutaj przypisz imię, rolę oraz ewentualny termin dostępu.</p>
   <div class="profile-form">
     <label>UID konta Firebase</label><input id="profileUidInput" placeholder="Wklej UID użytkownika">
     <div class="profile-grid"><div><label>Imię</label><input id="profileNameInput" placeholder="np. Maciek"></div><div><label>Rola</label><select id="profileRoleInput" onchange="toggleGuestProfileFields()"><option value="member">Członek zespołu</option><option value="vocalist">Wokalistka</option><option value="guest">Gość / przesłuchanie</option></select></div></div>
-    <div id="guestProfileFields" style="display:none"><div class="guest-note">Gość zobaczy wyłącznie utwory z wybranej setlisty. Gdy data minie, reguły Firebase automatycznie zablokują dostęp.</div><div class="profile-grid"><div><label>Dostęp ważny do</label><input id="profileExpiryInput" type="date"></div><div><label>Setlista przesłuchania</label><select id="profileAuditionSetlistInput"></select></div></div></div>
+    <div id="guestProfileFields" style="display:none"><div class="guest-note">Gość zobaczy cały repertuar i setlisty, ale wyłącznie do odczytu. Nie ma dostępu do Poczekalni. Gdy data minie, reguły Firebase automatycznie zablokują dostęp.</div><div><label>Dostęp ważny do</label><input id="profileExpiryInput" type="date"></div></div>
     <label class="profile-active"><input id="profileActiveInput" type="checkbox" checked> Konto aktywne</label>
     <div class="modal-actions"><button class="top-btn" onclick="clearProfileForm()">Wyczyść</button><button class="add-btn" style="padding:0 18px" onclick="saveProfile()">Zapisz profil</button></div>
   </div>
@@ -506,7 +506,6 @@ async function sendPasswordReset(){
 async function logoutUser(){if(!confirm('Wylogować z aplikacji?'))return;await auth.signOut();location.reload()}
 function listenFirebase(){
  firebaseStarted=true;syncStatus.textContent='Firebase: online';
- if(currentRole==='guest'){loadGuestData();return}
  listenFullFirebase();if(isAdmin)listenProfiles()
 }
 function listenFullFirebase(){
@@ -524,17 +523,7 @@ function listenFullFirebase(){
    refreshVocalSelects();renderSidebar();render();renderDetails();setTimeout(prewarmPlayer,700);
    if(window.waitlistModal&&waitlistModal.classList.contains('open'))renderWaitlist()
  },e=>{syncStatus.textContent='Błąd Firebase';console.error(e)});
- db.collection('setlists').orderBy('name').onSnapshot(snap=>{setlists=snap.docs.map(d=>({id:d.id,...d.data()}));refreshAuditionSetlists();renderSetlists()},e=>{syncStatus.textContent='Błąd setlist';console.error(e)})
-}
-async function loadGuestData(){
- try{
-   const ids=Array.isArray(currentProfile?.auditionSongIds)?currentProfile.auditionSongIds.map(String):[];
-   const docs=await Promise.all(ids.map(id=>db.collection('songs').doc(id).get()));
-   songs=docs.filter(d=>d.exists).map(d=>({id:d.id,...d.data()}));
-   setlists=[{id:'guest-audition',name:currentProfile?.auditionTitle||'Przesłuchanie',songs:songs.map(s=>s.id),guest:true}];
-   selectedId=songs[0]?.id||null;vocalNames=[...new Set(songs.map(s=>s.vocal).filter(Boolean))];inactiveVocalNames=[];
-   syncStatus.textContent='Dostęp czasowy';refreshVocalSelects();renderSidebar();render();renderDetails();renderSetlists()
- }catch(e){syncStatus.textContent='Brak dostępu';console.error(e);songs=[];setlists=[];renderSidebar();render();renderDetails()}
+ db.collection('setlists').orderBy('name').onSnapshot(snap=>{setlists=snap.docs.map(d=>({id:d.id,...d.data()}));renderSetlists()},e=>{syncStatus.textContent='Błąd setlist';console.error(e)})
 }
 function listenProfiles(){
  db.collection('profiles').onSnapshot(snap=>{profiles=snap.docs.map(d=>({uid:d.id,...d.data()})).sort((a,b)=>String(a.displayName||'').localeCompare(String(b.displayName||''),'pl'));renderUserManager()},e=>console.error('Profiles',e))
@@ -550,7 +539,7 @@ function openUserModal(){
  if(!authUser){authModal.classList.add('open');return}
  const label=ROLE_LABELS[currentRole]||currentRole;
  let extra='';
- if(currentRole==='guest'&&currentProfile?.expiresAt?.toDate)extra=`<br>Dostęp ważny do: <b>${esc(currentProfile.expiresAt.toDate().toLocaleDateString('pl-PL'))}</b><br>Pakiet: <b>${esc(currentProfile.auditionTitle||'Przesłuchanie')}</b>`;
+ if(currentRole==='guest'&&currentProfile?.expiresAt?.toDate)extra=`<br>Dostęp do całej bazy, tylko do odczytu.<br>Ważny do: <b>${esc(currentProfile.expiresAt.toDate().toLocaleDateString('pl-PL'))}</b>`;
  profileSummary.innerHTML=`<b>${esc(userName)}</b><br>Rola: <b>${esc(label)}</b>${extra}`;
  userModal.classList.add('open');
 }
@@ -559,15 +548,13 @@ function renderUserManager(){
  if(!window.profilesManager)return;
  profilesManager.innerHTML=profiles.map(p=>{
    const exp=p.expiresAt&&p.expiresAt.toDate?p.expiresAt.toDate().toLocaleDateString('pl-PL'):'—';
-   const packageName=p.role==='guest'?(p.auditionTitle||'brak pakietu'):'';
-   return `<div class="profile-card"><div class="profile-card-head"><b>${esc(p.displayName||'Bez imienia')}</b><span>${p.active===true?'🟢 aktywny':'🔴 zablokowany'}</span></div><div class="profile-meta">${esc(ROLE_LABELS[p.role]||p.role||'brak roli')} · UID: ${esc(p.uid)}${p.role==='guest'?`<br>Ważny do: ${esc(exp)} · ${esc(packageName)}`:''}</div><div class="profile-actions">${p.uid===ADMIN_UID?'':`<button onclick="editProfile('${p.uid}')">Edytuj</button><button onclick="toggleProfileActive('${p.uid}')">${p.active===true?'Zablokuj':'Aktywuj'}</button>`}</div></div>`
+   return `<div class="profile-card"><div class="profile-card-head"><b>${esc(p.displayName||'Bez imienia')}</b><span>${p.active===true?'🟢 aktywny':'🔴 zablokowany'}</span></div><div class="profile-meta">${esc(ROLE_LABELS[p.role]||p.role||'brak roli')} · UID: ${esc(p.uid)}${p.role==='guest'?`<br>Pełna baza, tylko odczyt · ważny do: ${esc(exp)}`:''}</div><div class="profile-actions">${p.uid===ADMIN_UID?'':`<button onclick="editProfile('${p.uid}')">Edytuj</button><button onclick="toggleProfileActive('${p.uid}')">${p.active===true?'Zablokuj':'Aktywuj'}</button>`}</div></div>`
  }).join('')||'<div class="admin-help">Brak profili. Profil administratora pojawi się automatycznie.</div>';
 }
-function refreshAuditionSetlists(){if(!window.profileAuditionSetlistInput)return;const old=profileAuditionSetlistInput.value;profileAuditionSetlistInput.innerHTML='<option value="">Wybierz setlistę...</option>'+setlists.filter(s=>!s.guest).map(s=>`<option value="${s.id}">${esc(s.name)} (${(s.songs||[]).length})</option>`).join('');if([...profileAuditionSetlistInput.options].some(o=>o.value===old))profileAuditionSetlistInput.value=old}
 function defaultExpiryDate(){const d=new Date();d.setDate(d.getDate()+14);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
-function toggleGuestProfileFields(){const guest=profileRoleInput.value==='guest';guestProfileFields.style.display=guest?'block':'none';if(guest&&!profileExpiryInput.value)profileExpiryInput.value=defaultExpiryDate();refreshAuditionSetlists()}
-function clearProfileForm(){profileUidInput.value='';profileUidInput.disabled=false;profileNameInput.value='';profileRoleInput.value='member';profileExpiryInput.value='';profileAuditionSetlistInput.value='';profileActiveInput.checked=true;toggleGuestProfileFields()}
-function editProfile(uid){const p=profiles.find(x=>x.uid===uid);if(!p||uid===ADMIN_UID)return;profileUidInput.value=uid;profileUidInput.disabled=true;profileNameInput.value=p.displayName||'';profileRoleInput.value=VALID_ROLES.includes(p.role)?p.role:'member';profileActiveInput.checked=p.active===true;profileExpiryInput.value=p.expiresAt?.toDate?new Date(p.expiresAt.toDate().getTime()-p.expiresAt.toDate().getTimezoneOffset()*60000).toISOString().slice(0,10):'';toggleGuestProfileFields();profileAuditionSetlistInput.value=p.auditionSetlistId||''}
+function toggleGuestProfileFields(){const guest=profileRoleInput.value==='guest';guestProfileFields.style.display=guest?'block':'none';if(guest&&!profileExpiryInput.value)profileExpiryInput.value=defaultExpiryDate()}
+function clearProfileForm(){profileUidInput.value='';profileUidInput.disabled=false;profileNameInput.value='';profileRoleInput.value='member';profileExpiryInput.value='';profileActiveInput.checked=true;toggleGuestProfileFields()}
+function editProfile(uid){const p=profiles.find(x=>x.uid===uid);if(!p||uid===ADMIN_UID)return;profileUidInput.value=uid;profileUidInput.disabled=true;profileNameInput.value=p.displayName||'';profileRoleInput.value=VALID_ROLES.includes(p.role)?p.role:'member';profileActiveInput.checked=p.active===true;profileExpiryInput.value=p.expiresAt?.toDate?new Date(p.expiresAt.toDate().getTime()-p.expiresAt.toDate().getTimezoneOffset()*60000).toISOString().slice(0,10):'';toggleGuestProfileFields()}
 async function saveProfile(){
  if(!isAdmin)return alert('Tylko administrator.');
  const uid=profileUidInput.value.trim(),displayName=profileNameInput.value.trim(),role=profileRoleInput.value;
@@ -575,9 +562,9 @@ async function saveProfile(){
  if(!displayName)return alert('Wpisz imię użytkownika.');if(!VALID_ROLES.includes(role))return alert('Wybierz prawidłową rolę.');
  const data={displayName,role,active:profileActiveInput.checked,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
  if(role==='guest'){
-   const date=profileExpiryInput.value,set=setlists.find(s=>s.id===profileAuditionSetlistInput.value);
-   if(!date)return alert('Ustaw datę wygaśnięcia dostępu.');if(!set)return alert('Wybierz setlistę przesłuchania.');
-   data.expiresAt=firebase.firestore.Timestamp.fromDate(new Date(date+'T23:59:59'));data.auditionSetlistId=set.id;data.auditionTitle=set.name;data.auditionSongIds=[...(set.songs||[])];
+   const date=profileExpiryInput.value;
+   if(!date)return alert('Ustaw datę wygaśnięcia dostępu.');
+   data.expiresAt=firebase.firestore.Timestamp.fromDate(new Date(date+'T23:59:59'));data.auditionSetlistId='';data.auditionTitle='';data.auditionSongIds=[];
  }else{data.expiresAt=null;data.auditionSetlistId='';data.auditionTitle='';data.auditionSongIds=[]}
  if(!profiles.some(p=>p.uid===uid))data.createdAt=firebase.firestore.FieldValue.serverTimestamp();
  await db.collection('profiles').doc(uid).set(data,{merge:true});clearProfileForm();alert('Profil został zapisany.')
@@ -592,7 +579,7 @@ function showAdminMenu(){
 function showAdminUsers(){
  if(window.adminMenu)adminMenu.style.display='none';
  if(window.adminUsersPanel)adminUsersPanel.style.display='block';
- refreshAuditionSetlists();toggleGuestProfileFields();renderUserManager();
+ toggleGuestProfileFields();renderUserManager();
 }
 function adminExportBackup(){
  if(!isAdmin)return alert('Tylko Marek / administrator.');
@@ -613,7 +600,7 @@ function updateAdminUi(){
  if(window.waitlistBtn)waitlistBtn.style.display=canUseWaitlist()?'block':'none';
  if(window.setlistCreateGroup)setlistCreateGroup.style.display=canManageSetlists()?'grid':'none';
  if(window.setlistModalCreate)setlistModalCreate.style.display=canManageSetlists()?'grid':'none';
- if(window.setlistsHelp)setlistsHelp.textContent=canManageSetlists()?'Setlisty są wspólne i mogą być edytowane przez członków zespołu.':currentRole==='guest'?'To Twój czasowy pakiet utworów do przesłuchania.':'Setlisty są dostępne tylko do odczytu.';
+ if(window.setlistsHelp)setlistsHelp.textContent=canManageSetlists()?'Setlisty są wspólne i mogą być edytowane przez członków zespołu.':currentRole==='guest'?'Czasowy dostęp: cały repertuar i setlisty są dostępne tylko do odczytu.':'Setlisty są dostępne tylko do odczytu.';
  if(window.userLabel)userLabel.textContent=userName||'—';
 }
 function canManageMain(){return isAdmin}function canEditSongs(){return isAdmin||currentRole==='member'}function canManageSetlists(){return isAdmin||currentRole==='member'}function canUseWaitlist(){return isAdmin||currentRole==='member'||currentRole==='vocalist'}function canRequestDelete(){return isAdmin||currentRole==='member'}
@@ -629,7 +616,7 @@ function refreshVocalSelects(currentVocal=''){
 }
 function renderLetters(){const ls=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','R','S','T','U','W','Z','#'];letters.innerHTML=ls.map(l=>`<button class="letter ${activeLetter===l?'active':''}" onclick="setLetter('${l}')">${l}</button>`).join('')}function setLetter(l){activeLetter=activeLetter===l?'':l;renderLetters();render()}
 function renderSidebar(){
- const all=currentRole==='guest'?songs.filter(s=>!s.pendingDelete).length:songs.filter(s=>!s.pendingDelete&&!String(s.status||'').includes('Poczekalnia')&&!String(s.status||'').includes('Archiwalny')).length;
+ const all=songs.filter(s=>!s.pendingDelete&&!String(s.status||'').includes('Poczekalnia')&&!String(s.status||'').includes('Archiwalny')).length;
  statusFilters.innerHTML=['Wszystkie',...STATUS].map(s=>{const c=s==='Wszystkie'?all:songs.filter(x=>!x.pendingDelete&&x.status===s).length;const col=s.includes('Hit')?'var(--o)':s.includes('Gotowy')?'var(--g)':s.includes('W przygotowaniu')?'var(--y)':s.includes('Archiwalny')?'#8b96a8':'var(--v)';return`<div class="filter-item ${activeStatus===s?'active':''}" onclick="setStatus('${escAttr(s)}')"><span class="fname"><span class="dot" style="background:${col}"></span>${esc(s)}</span><span class="count">${c}</span></div>`}).join('');
  const vocals=allVocalNames();
  vocalFilters.innerHTML=['Wszyscy',...vocals].map(v=>{const c=v==='Wszyscy'?all:songs.filter(x=>!x.pendingDelete&&x.vocal===v).length;return`<div class="filter-item ${activeVocal===v?'active':''}" onclick="setVocal('${escAttr(v)}')"><span class="fname">♬ ${esc(v)}${inactiveVocalNames.includes(v)?'<span class="inactive-vocal">nieaktywny</span>':''}</span><span class="count">${c}</span></div>`}).join('');
@@ -638,7 +625,7 @@ function renderSidebar(){
 }
 function setStatus(s){activeStatus=s;renderSidebar();render()}function setVocal(v){activeVocal=v;renderSidebar();render()}
 function renderDeleteRequests(){if(!isAdmin)return;const p=songs.filter(s=>s.pendingDelete);deleteRequests.innerHTML=p.length?p.map(s=>`<div class="listrow"><div><b>${esc(s.title)}</b><br><span style="color:var(--m);font-size:12px">${esc(s.artist)} / zgłosił: ${esc(s.deleteRequestedBy||'?')}</span></div><div><button class="restore" onclick="restoreSong('${s.id}')">↩</button><button onclick="hardDeleteSong('${s.id}')">✓</button></div></div>`).join(''):'<div style="color:var(--m);font-size:13px">Brak zgłoszeń.</div>'}
-function filtered(){const q=searchInput.value.toLowerCase().trim(),key=keyFilter.value,vf=vocalSelect.value,sf=statusSelect.value,lf=languageSelect.value,min=Number(bpmFrom.value||0),max=Number(bpmTo.value||999);let l=songs.filter(s=>!s.pendingDelete&&(currentRole==='guest'||!String(s.status||'').includes('Poczekalnia')));if(activeStatus==='Wszystkie'&&currentRole!=='guest')l=l.filter(s=>!String(s.status||'').includes('Archiwalny'));if(q)l=l.filter(s=>(s.artist+' '+s.title+' '+s.key+' '+s.bandKey).toLowerCase().includes(q));if(activeLetter)l=l.filter(s=>activeLetter==='#'?!/^[a-ząćęłńóśźż]/i.test(s.artist):s.artist.toUpperCase().startsWith(activeLetter));if(activeStatus!=='Wszystkie')l=l.filter(s=>s.status===activeStatus);if(activeVocal!=='Wszyscy')l=l.filter(s=>s.vocal===activeVocal);if(key)l=l.filter(s=>s.key===key||s.bandKey===key);if(vf)l=l.filter(s=>s.vocal===vf);if(sf)l=l.filter(s=>s.status===sf);if(lf)l=l.filter(s=>(s.language||'')===lf);l=l.filter(s=>Number(s.bpm||0)>=min&&Number(s.bpm||0)<=max);if(dateSort.value==='new')l.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));else if(dateSort.value==='old')l.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));else l.sort((a,b)=>(a.artist+a.title).localeCompare(b.artist+b.title,'pl'));return l}
+function filtered(){const q=searchInput.value.toLowerCase().trim(),key=keyFilter.value,vf=vocalSelect.value,sf=statusSelect.value,lf=languageSelect.value,min=Number(bpmFrom.value||0),max=Number(bpmTo.value||999);let l=songs.filter(s=>!s.pendingDelete&&!String(s.status||'').includes('Poczekalnia'));if(activeStatus==='Wszystkie')l=l.filter(s=>!String(s.status||'').includes('Archiwalny'));if(q)l=l.filter(s=>(s.artist+' '+s.title+' '+s.key+' '+s.bandKey).toLowerCase().includes(q));if(activeLetter)l=l.filter(s=>activeLetter==='#'?!/^[a-ząćęłńóśźż]/i.test(s.artist):s.artist.toUpperCase().startsWith(activeLetter));if(activeStatus!=='Wszystkie')l=l.filter(s=>s.status===activeStatus);if(activeVocal!=='Wszyscy')l=l.filter(s=>s.vocal===activeVocal);if(key)l=l.filter(s=>s.key===key||s.bandKey===key);if(vf)l=l.filter(s=>s.vocal===vf);if(sf)l=l.filter(s=>s.status===sf);if(lf)l=l.filter(s=>(s.language||'')===lf);l=l.filter(s=>Number(s.bpm||0)>=min&&Number(s.bpm||0)<=max);if(dateSort.value==='new')l.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));else if(dateSort.value==='old')l.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));else l.sort((a,b)=>(a.artist+a.title).localeCompare(b.artist+b.title,'pl'));return l}
 function render(){
  const l=filtered();
  songsList.innerHTML=l.map(s=>`<div class="song-row ${selectedId===s.id?'active':''}" data-row-id="${s.id}" onclick="songRowAction('${s.id}')">
