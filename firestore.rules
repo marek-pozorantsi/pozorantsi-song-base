@@ -1,0 +1,123 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && request.auth.uid == 'ibXYNXnkluZFX4W0hddFoZ3TGa42';
+    }
+
+    function profilePath() {
+      return /databases/$(database)/documents/profiles/$(request.auth.uid);
+    }
+
+    function hasActiveProfile() {
+      return signedIn()
+        && exists(profilePath())
+        && get(profilePath()).data.active == true
+        && (
+          !get(profilePath()).data.keys().hasAny(['expiresAt'])
+          || get(profilePath()).data.expiresAt == null
+          || request.time < get(profilePath()).data.expiresAt
+        );
+    }
+
+    function hasRole(roleName) {
+      return hasActiveProfile()
+        && get(profilePath()).data.role == roleName;
+    }
+
+    function isMember() {
+      return hasRole('member');
+    }
+
+    function isVocalist() {
+      return hasRole('vocalist');
+    }
+
+    function isGuest() {
+      return hasRole('guest');
+    }
+
+    function memberMusicalEdit() {
+      return isMember()
+        && request.resource.data.updatedUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'artist',
+          'title',
+          'bpm',
+          'key',
+          'bandKey',
+          'vocal',
+          'language',
+          'yt',
+          'ytId',
+          'notes',
+          'updatedBy',
+          'updatedUid',
+          'updatedAt'
+        ]);
+    }
+
+    function memberDeleteRequest() {
+      return isMember()
+        && request.resource.data.updatedUid == request.auth.uid
+        && request.resource.data.deleteRequestedUid == request.auth.uid
+        && resource.data.pendingDelete != true
+        && request.resource.data.pendingDelete == true
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'pendingDelete',
+          'deleteRequestedBy',
+          'deleteRequestedUid',
+          'deleteRequestedAt',
+          'updatedBy',
+          'updatedUid',
+          'updatedAt'
+        ]);
+    }
+
+    function canCreateWaitlistSong() {
+      return (isMember() || isVocalist())
+        && request.resource.data.status == '⏳ Poczekalnia'
+        && request.resource.data.pendingDelete == false
+        && request.resource.data.addedUid == request.auth.uid
+        && request.resource.data.updatedUid == request.auth.uid;
+    }
+
+    match /profiles/{userId} {
+      allow get: if isAdmin() || (signedIn() && request.auth.uid == userId);
+      allow list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /songs/{songId} {
+      allow read: if isAdmin() || isMember() || isVocalist() || isGuest();
+
+      allow create: if isAdmin() || canCreateWaitlistSong();
+
+      allow update: if isAdmin()
+        || memberMusicalEdit()
+        || memberDeleteRequest();
+
+      allow delete: if isAdmin();
+    }
+
+    match /setlists/{setlistId} {
+      allow read: if isAdmin() || isMember() || isVocalist() || isGuest();
+      allow create, update, delete: if isAdmin() || isMember();
+    }
+
+    match /settings/{documentId} {
+      allow read: if isAdmin() || isMember() || isVocalist() || isGuest();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
