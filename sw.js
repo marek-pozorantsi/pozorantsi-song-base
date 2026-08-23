@@ -1,4 +1,4 @@
-const CACHE_NAME='pozorantsi-song-base-secure-rc4-3';
+const CACHE_NAME='pozorantsi-song-base-secure-rc4-3-drum-view-1';
 const FILES=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(FILES)).catch(()=>{}));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim();});

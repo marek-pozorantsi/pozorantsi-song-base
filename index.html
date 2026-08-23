@@ -371,11 +371,41 @@ html,body{overflow-x:hidden!important;max-width:100%!important}
 .profile-form{border:1px solid var(--b);background:#07111f;border-radius:12px;padding:12px;margin:12px 0}.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}.profile-active{display:flex!important;align-items:center;gap:8px;color:var(--t)!important;margin:5px 0 10px}.profile-active input{width:auto!important;margin:0!important}.profile-card{border:1px solid var(--b);background:#07111f;border-radius:10px;padding:10px;margin:8px 0}.profile-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.profile-meta{color:var(--m);font-size:12px;line-height:1.45;margin-top:5px}.profile-actions{display:flex;gap:7px;margin-top:8px}.profile-actions button{border:1px solid var(--b);background:#0d1a2b;color:var(--t);border-radius:8px;padding:7px 10px;cursor:pointer;font-weight:800}.role-badge{color:#caaeff;font-size:12px;border:1px solid rgba(167,120,255,.35);background:rgba(167,120,255,.12);padding:7px 10px;border-radius:999px;display:none}.role-badge.show{display:inline-block}.guest-note{border:1px solid rgba(242,173,22,.35);background:rgba(242,173,22,.1);color:#ffd67d;border-radius:10px;padding:10px;font-size:13px;line-height:1.45;margin:10px 0}
 @media(max-width:900px){.profile-grid{grid-template-columns:1fr}}
 
+/* Drum View — uproszczony widok sceniczny, bez zmian w danych i Firebase */
+.drum-launch{display:none;border:1px solid rgba(76,191,255,.62);background:rgba(36,137,191,.16);color:#7fd7ff;border-radius:9px;padding:7px 11px;font-size:12px;font-weight:900;letter-spacing:.8px;cursor:pointer;white-space:nowrap}
+.drum-launch:hover{background:rgba(36,137,191,.28)}
+.drum-view{display:none;position:fixed;inset:0;z-index:3000;background:#03070d;color:#fff;overflow-y:auto;overscroll-behavior:contain}
+.drum-view.open{display:block}
+.drum-view-header{position:sticky;top:0;z-index:2;display:grid;grid-template-columns:auto minmax(260px,760px);justify-content:center;gap:14px;padding:14px max(16px,env(safe-area-inset-right)) 14px max(16px,env(safe-area-inset-left));background:rgba(3,7,13,.96);border-bottom:1px solid rgba(255,255,255,.14);backdrop-filter:blur(14px)}
+.drum-back{min-height:48px;border:1px solid rgba(255,255,255,.24);background:#101a28;color:#fff;border-radius:11px;padding:0 17px;font-size:15px;font-weight:900;cursor:pointer}
+.drum-search{min-height:48px;width:100%;border:1px solid rgba(127,215,255,.45);background:#09121d;color:#fff;border-radius:11px;padding:0 17px;font-size:18px;font-weight:700;outline:none}
+.drum-search:focus{border-color:#7fd7ff;box-shadow:0 0 0 3px rgba(127,215,255,.12)}
+.drum-search::placeholder{color:#7f8d9f}
+.drum-list{width:min(1080px,100%);margin:0 auto;padding:0 18px max(30px,env(safe-area-inset-bottom))}
+.drum-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;min-height:98px;padding:15px 4px;border-bottom:1px solid rgba(255,255,255,.19)}
+.drum-title{font-size:30px;line-height:1.04;font-weight:900;letter-spacing:-.35px;color:#fff;overflow-wrap:anywhere}
+.drum-artist{margin-top:7px;font-size:19px;line-height:1.15;font-weight:800;color:#4cbfff;overflow-wrap:anywhere}
+.drum-tempo{min-width:104px;text-align:right;color:#fff;font-size:39px;line-height:.92;font-weight:950;font-variant-numeric:tabular-nums}
+.drum-tempo span{display:block;margin-top:8px;color:#7f8d9f;font-size:11px;line-height:1;font-weight:900;letter-spacing:1.5px}
+.drum-empty{padding:55px 10px;text-align:center;color:#8d99a8;font-size:18px;font-weight:700}
+body.drum-mode{overflow:hidden}
+@media(max-width:900px){
+  .drum-launch{position:absolute;right:12px;top:12px;z-index:45;min-height:36px;padding:0 11px}
+  .drum-view-header{grid-template-columns:auto minmax(0,1fr);gap:9px;padding:10px max(10px,env(safe-area-inset-right)) 10px max(10px,env(safe-area-inset-left))}
+  .drum-back{min-height:46px;padding:0 12px;font-size:13px}
+  .drum-search{min-height:46px;padding:0 13px;font-size:16px}
+  .drum-list{padding-left:14px;padding-right:14px}
+  .drum-row{min-height:100px;padding:15px 1px;gap:12px}
+  .drum-title{font-size:26px;line-height:1.02}
+  .drum-artist{font-size:18px;margin-top:7px}
+  .drum-tempo{min-width:76px;font-size:34px}
+}
+
 </style>
 </head>
 <body>
 <div class="app" id="app">
-<header><div class="brand"><div class="brand-main">pozorants<span class="orange">i</span></div><div class="brand-sub">SONG BASE</div></div><div class="top-stats"><span style="color:var(--v2);font-size:24px">♫</span><span id="totalCount">Ładowanie bazy…</span><span class="sync" id="syncStatus">Wymagane logowanie</span><span class="role-badge" id="roleBadge">—</span></div><div class="top-actions"><button class="top-btn" onclick="openUserModal()">Użytkownik: <span id="userLabel">—</span></button><button class="top-btn" id="logoutBtn" onclick="logoutUser()" style="display:none">Wyloguj</button><input id="importFile" type="file" accept=".json" style="display:none" onchange="importData(event)"><button class="icon-btn" onclick="toggleLeft()">☰</button><button class="icon-btn" onclick="toggleRight()">ⓘ</button></div></header>
+<header><div class="brand"><div class="brand-main">pozorants<span class="orange">i</span></div><div class="brand-sub">SONG BASE</div></div><div class="top-stats"><span style="color:var(--v2);font-size:24px">♫</span><span id="totalCount">Ładowanie bazy…</span><span class="sync" id="syncStatus">Wymagane logowanie</span><button id="drumLaunchBtn" class="drum-launch" onclick="openDrumView()">DRUM</button><span class="role-badge" id="roleBadge">—</span></div><div class="top-actions"><button class="top-btn" onclick="openUserModal()">Użytkownik: <span id="userLabel">—</span></button><button class="top-btn" id="logoutBtn" onclick="logoutUser()" style="display:none">Wyloguj</button><input id="importFile" type="file" accept=".json" style="display:none" onchange="importData(event)"><button class="icon-btn" onclick="toggleLeft()">☰</button><button class="icon-btn" onclick="toggleRight()">ⓘ</button></div></header>
 <aside class="left"><button class="side-toggle" onclick="toggleLeft()" id="leftToggle">›</button><div class="side-content">
 <div class="card"><div class="card-title">▽ FILTRY</div><div class="group"><div class="label">STATUS</div><div id="statusFilters"></div></div><div class="group"><div class="label">WOKAL</div><div id="vocalFilters"></div></div><div class="group" id="vocalAdminGroup"><div class="label">EDYCJA WOKALISTÓW</div><div class="addrow"><input id="newVocalInput" placeholder="Dodaj osobę..."><button onclick="addVocalist()">+</button></div><div id="vocalManager"></div></div></div>
 <div class="card"><div class="card-title">SETLISTY <button class="more" id="setlistOpenBtn" onclick="openSetlistsModal()">＋</button></div><div class="group"><div class="addrow" id="setlistCreateGroup"><input id="newSetlistInput" placeholder="Nowa setlista..."><button onclick="addSetlist()">+</button></div><div id="setlistsList"></div></div></div>
@@ -385,6 +415,13 @@ html,body{overflow-x:hidden!important;max-width:100%!important}
 <aside class="right"><button class="side-toggle" onclick="toggleRight()" id="rightToggle">‹</button><div class="side-content" id="details"></div></aside>
 <section class="player"><div class="now"><img id="nowThumb" onclick="showYoutubeForSelected()" style="cursor:pointer" src="https://img.youtube.com/vi/fNFzfwLM72c/hqdefault.jpg"><div><div class="now-title" id="nowTitle">Pozorantsi</div><div class="now-artist" id="nowArtist">Song Base</div></div></div><div><div class="controls"><button class="control-btn" onclick="showYoutubeForSelected()">📺 Pokaż mini</button><button class="control-btn" onclick="skip(-10)">-10s</button><button class="control-btn" onclick="skip(-5)">-5s</button><button class="control-btn main-play" id="mainPlayBtn" onclick="togglePlay()">▶</button><button class="control-btn" onclick="skip(5)">+5s</button><button class="control-btn" onclick="skip(10)">+10s</button></div><div class="progress"><span id="curTime">0:00</span><div class="bar" onclick="seekByClick(event)"><span id="progressFill"></span></div><span id="durTime">0:00</span></div></div><div class="volume">🔊 <input id="volumeSlider" type="range" value="70" min="0" max="100" oninput="setVolume(this.value)"></div></section>
 </div>
+<section id="drumView" class="drum-view" aria-hidden="true">
+  <div class="drum-view-header">
+    <button type="button" class="drum-back" onclick="closeDrumView()">← WRÓĆ</button>
+    <input id="drumSearch" class="drum-search" type="search" inputmode="search" autocomplete="off" placeholder="Szukaj utworu lub wykonawcy…" oninput="renderDrumList()">
+  </div>
+  <div id="drumList" class="drum-list"></div>
+</section>
 <button id="playerToggleBtn" class="player-toggle" onclick="togglePlayerBar()">Schowaj player</button>
 <div class="modal auth-gate open" id="authModal"><div class="modal-box" style="width:460px"><h2>Logowanie do Song Base</h2><p class="admin-help">Członkowie zespołu i wokalistki logują się swoim adresem e-mail.</p><label>Adres e-mail</label><input id="authEmailInput" type="email" autocomplete="username" placeholder="E-mail"><label>Hasło</label><input id="authPasswordInput" type="password" autocomplete="current-password" placeholder="Hasło" onkeydown="if(event.key==='Enter')loginUser()"><div id="authError" class="auth-error"></div><div class="modal-actions"><button class="top-btn" onclick="sendPasswordReset()">Nie pamiętam hasła</button><button class="add-btn" id="loginBtn" style="padding:0 18px" onclick="loginUser()">Zaloguj</button></div><div class="guest-login-box"><div class="guest-login-title">Dostęp dla gościa</div><p class="guest-login-help">Wpisz wyłącznie otrzymane hasło. Adres techniczny zostanie użyty automatycznie.</p><div class="guest-login-actions"><input id="guestPasswordInput" type="password" autocomplete="current-password" placeholder="Hasło gościa" onkeydown="if(event.key==='Enter')loginGuest()"><button class="wait-btn" id="guestLoginBtn" onclick="loginGuest()">Wejdź jako gość</button></div></div></div></div>
 <div class="modal" id="userModal"><div class="modal-box" style="width:430px"><h2>Profil użytkownika</h2><p class="admin-help" id="profileSummary">Imię i rola są przypisane do konta przez administratora.</p><div class="modal-actions"><button class="top-btn" onclick="userModal.classList.remove('open')">Zamknij</button></div></div></div>
@@ -616,8 +653,10 @@ function adminImportBackup(){
 function updateAdminUi(){
  const dot=document.getElementById('adminDot');
  const badge=document.getElementById('roleBadge');
+ const drumButton=document.getElementById('drumLaunchBtn');
  if(dot){dot.classList.toggle('admin-on',isAdmin);dot.style.display=isAdmin?'block':'none'}
  if(badge){badge.textContent=ROLE_LABELS[currentRole]||'';badge.classList.toggle('show',!!authUser&&currentRole!=='none')}
+ if(drumButton)drumButton.style.display=authUser&&currentRole!=='none'?'inline-block':'none';
  if(window.vocalAdminGroup)vocalAdminGroup.style.display=isAdmin?'block':'none';
  if(window.mainAddBtn)mainAddBtn.style.display=isAdmin?'block':'none';
  if(window.waitlistBtn)waitlistBtn.style.display=canUseWaitlist()?'block':'none';
@@ -671,7 +710,38 @@ function render(){
    ${canRequestDelete()?`<button class="more" title="Zgłoś do usunięcia" style="color:#ff7777" onclick="event.stopPropagation();requestDeleteSong('${s.id}')">×</button>`:''}
  </div>
  </div>`).join('')||`<div style="padding:40px;text-align:center;color:var(--m)">Brak utworów dla wybranych filtrów.</div>`;
+ if(document.body.classList.contains('drum-mode'))renderDrumList();
 }
+function drumSongs(){
+ const search=document.getElementById('drumSearch');
+ const q=(search?.value||'').toLocaleLowerCase('pl').trim();
+ return songs.filter(s=>!s.pendingDelete&&!String(s.status||'').includes('Poczekalnia')&&!String(s.status||'').includes('Archiwalny'))
+  .filter(s=>!q||(String(s.title||'')+' '+String(s.artist||'')).toLocaleLowerCase('pl').includes(q))
+  .sort((a,b)=>(String(a.artist||'')+String(a.title||'')).localeCompare(String(b.artist||'')+String(b.title||''),'pl'));
+}
+function renderDrumList(){
+ const listNode=document.getElementById('drumList');
+ if(!listNode)return;
+ const list=drumSongs();
+ listNode.innerHTML=list.map(s=>`<div class="drum-row"><div><div class="drum-title">${esc(s.title||'-')}</div><div class="drum-artist">${esc(s.artist||'-')}</div></div><div class="drum-tempo">${esc(s.bpm||'-')}<span>BPM</span></div></div>`).join('')||'<div class="drum-empty">Brak pasujących utworów.</div>';
+}
+function openDrumView(){
+ if(!authUser||currentRole==='none')return;
+ const view=document.getElementById('drumView');
+ const search=document.getElementById('drumSearch');
+ document.body.classList.add('drum-mode');
+ view.classList.add('open');
+ view.setAttribute('aria-hidden','false');
+ renderDrumList();
+ setTimeout(()=>search.focus(),80);
+}
+function closeDrumView(){
+ const view=document.getElementById('drumView');
+ document.body.classList.remove('drum-mode');
+ view.classList.remove('open');
+ view.setAttribute('aria-hidden','true');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('drum-mode'))closeDrumView()});
 function songRowAction(id){
  if(window.matchMedia&&window.matchMedia('(max-width:900px)').matches)playSong(id);
  else selectSong(id);
