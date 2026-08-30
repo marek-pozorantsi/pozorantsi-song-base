@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Pozorantsi Song Base — Band Click v6 CONTINUOUS iPHONE AUDIO</title>
+<title>Pozorantsi Song Base — Band Click v7 GUEST 30 DAYS</title>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preload" href="band-click-track-60.m4a" as="audio" type="audio/mp4">
@@ -705,11 +705,16 @@ function listenFirebase(){
 function listenFullFirebase(){
  db.collection('settings').doc('main').onSnapshot(async d=>{
    if(!d.exists){
-     if(isAdmin)await db.collection('settings').doc('main').set({vocalists:['Lisa','Ewa','Zuzia','Marek','Duet','Instrumental'],inactiveVocalists:[],appUsers:['Marek','Radek','Łukasz','Paweł','Maciek','Piotr'],createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+     if(isAdmin)await db.collection('settings').doc('main').set({vocalists:['Lisa','Ewa','Zuzia','Duet','Instrumental'],inactiveVocalists:[],appUsers:['Marek','Radek','Łukasz','Paweł','Maciek','Piotr'],createdAt:firebase.firestore.FieldValue.serverTimestamp()});
      return
    }
-   vocalNames=d.data().vocalists||[];inactiveVocalNames=d.data().inactiveVocalists||[];
+   const savedVocalNames=Array.isArray(d.data().vocalists)?d.data().vocalists:[];
+   const savedInactiveVocalNames=Array.isArray(d.data().inactiveVocalists)?d.data().inactiveVocalists:[];
+   vocalNames=cleanVocalistList(savedVocalNames);inactiveVocalNames=cleanVocalistList(savedInactiveVocalNames);
    appUsers=d.data().appUsers||['Marek','Radek','Łukasz','Paweł','Maciek','Piotr'];
+   if(isAdmin&&(JSON.stringify(savedVocalNames)!==JSON.stringify(vocalNames)||JSON.stringify(savedInactiveVocalNames)!==JSON.stringify(inactiveVocalNames))){
+     await db.collection('settings').doc('main').set({vocalists:vocalNames,inactiveVocalists:inactiveVocalNames,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+   }
    refreshVocalSelects();renderUserManager();renderSidebar();render();
  },e=>{syncStatus.textContent='Błąd ustawień';console.error(e)});
  db.collection('songs').orderBy('artist').onSnapshot(snap=>{
@@ -727,6 +732,9 @@ async function seedIfEmpty(){if(!isAdmin)return;const snap=await db.collection('
 function toggleLeft(){app.classList.toggle('left-open');leftToggle.textContent=app.classList.contains('left-open')?'‹':'›'}function toggleRight(){app.classList.toggle('right-open');rightToggle.textContent=app.classList.contains('right-open')?'›':'‹'}function setUserName(){openUserModal()}
 
 const CORE_USERS=['Marek','Radek','Łukasz','Paweł','Maciek','Piotr'];
+const RESERVED_NON_VOCAL_NAMES=new Set(['marek']);
+function isReservedNonVocalist(name){return RESERVED_NON_VOCAL_NAMES.has(String(name||'').trim().toLocaleLowerCase('pl'))}
+function cleanVocalistList(values=[]){return [...new Set((Array.isArray(values)?values:[]).map(v=>String(v||'').trim()).filter(v=>v&&!isReservedNonVocalist(v)))]}
 function getUserOptions(){
  return [...new Set([...profiles.map(p=>p.displayName),...songs.map(s=>s.addedBy),...songs.map(s=>s.updatedBy)].filter(Boolean))];
 }
@@ -743,7 +751,7 @@ function renderUserManager(){
  if(!window.profilesManager)return;
  profilesManager.innerHTML=profiles.map(p=>{
    const exp=p.expiresAt&&p.expiresAt.toDate?p.expiresAt.toDate().toLocaleDateString('pl-PL'):'—';
-   return `<div class="profile-card"><div class="profile-card-head"><b>${esc(p.displayName||'Bez imienia')}</b><span>${p.active===true?'🟢 aktywny':'🔴 zablokowany'}</span></div><div class="profile-meta">${esc(ROLE_LABELS[p.role]||p.role||'brak roli')} · UID: ${esc(p.uid)}${p.role==='guest'?`<br>Pełna baza, tylko odczyt · ważny do: ${esc(exp)}`:''}</div><div class="profile-actions">${p.uid===ADMIN_UID?'':`<button onclick="editProfile('${p.uid}')">Edytuj</button><button onclick="toggleProfileActive('${p.uid}')">${p.active===true?'Zablokuj':'Aktywuj'}</button>`}</div></div>`
+   return `<div class="profile-card"><div class="profile-card-head"><b>${esc(p.displayName||'Bez imienia')}</b><span>${p.active===true?'🟢 aktywny':'🔴 zablokowany'}</span></div><div class="profile-meta">${esc(ROLE_LABELS[p.role]||p.role||'brak roli')} · UID: ${esc(p.uid)}${p.role==='guest'?`<br>Pełna baza, tylko odczyt · ważny do: ${esc(exp)}`:''}</div><div class="profile-actions">${p.uid===ADMIN_UID?'':`${p.role==='guest'?`<button onclick="extendGuestAccess('${p.uid}',30)">+30 dni</button>`:''}<button onclick="editProfile('${p.uid}')">Edytuj</button><button onclick="toggleProfileActive('${p.uid}')">${p.active===true?'Zablokuj':'Aktywuj'}</button>`}</div></div>`
  }).join('')||'<div class="admin-help">Brak profili. Profil administratora pojawi się automatycznie.</div>';
 }
 function defaultExpiryDate(){const d=new Date();d.setDate(d.getDate()+30);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
@@ -759,12 +767,22 @@ async function saveProfile(){
  if(role==='guest'){
    const date=profileExpiryInput.value;
    if(!date)return alert('Ustaw datę wygaśnięcia dostępu.');
+   if(date<defaultExpiryDate())return alert(`Dostęp gościa musi obejmować co najmniej 30 dni. Ustaw datę ${new Date((defaultExpiryDate())+'T12:00:00').toLocaleDateString('pl-PL')} lub późniejszą.`);
    data.expiresAt=firebase.firestore.Timestamp.fromDate(new Date(date+'T23:59:59'));data.auditionSetlistId='';data.auditionTitle='';data.auditionSongIds=[];
  }else{data.expiresAt=null;data.auditionSetlistId='';data.auditionTitle='';data.auditionSongIds=[]}
  if(!profiles.some(p=>p.uid===uid))data.createdAt=firebase.firestore.FieldValue.serverTimestamp();
  await db.collection('profiles').doc(uid).set(data,{merge:true});clearProfileForm();alert('Profil został zapisany.')
 }
 async function toggleProfileActive(uid){if(!isAdmin||uid===ADMIN_UID)return;const p=profiles.find(x=>x.uid===uid);if(!p)return;const next=p.active!==true;if(!confirm(`${next?'Aktywować':'Zablokować'} dostęp użytkownika ${p.displayName}?`))return;await db.collection('profiles').doc(uid).update({active:next,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}
+async function extendGuestAccess(uid,days=30){
+ if(!isAdmin)return alert('Tylko administrator.');
+ const p=profiles.find(x=>x.uid===uid);if(!p||p.role!=='guest')return alert('Nie znaleziono profilu gościa.');
+ const current=p.expiresAt?.toDate?p.expiresAt.toDate():null;
+ const base=current&&current.getTime()>Date.now()?current:new Date();
+ const expiresAt=new Date(base);expiresAt.setDate(expiresAt.getDate()+Number(days||30));expiresAt.setHours(23,59,59,999);
+ await db.collection('profiles').doc(uid).set({active:true,expiresAt:firebase.firestore.Timestamp.fromDate(expiresAt),updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+ alert(`Dostęp gościa został przedłużony do ${expiresAt.toLocaleDateString('pl-PL')}.`)
+}
 
 
 function showAdminMenu(){
@@ -809,9 +827,9 @@ function isBandClickMaster(){const n=String(userName||'').trim().toLocaleLowerCa
 function requireAdminMain(){if(!canManageMain()){alert('Tylko administrator może dodawać, usuwać lub przenosić utwory do bazy głównej.');return false}return true}
 function requireSongEdit(){if(!canEditSongs()){alert('Twoja rola pozwala na podgląd repertuaru, ale nie na edycję głównych danych utworów.');return false}return true}
 function requireSetlistEdit(){if(!canManageSetlists()){alert('Setlisty są dla tego konta dostępne tylko do odczytu.');return false}return true}
-function allVocalNames(){return [...new Set([...(vocalNames||[]),...songs.map(s=>s.vocal).filter(Boolean)])]}
+function allVocalNames(){return cleanVocalistList([...(vocalNames||[]),...songs.map(s=>s.vocal).filter(Boolean)])}
 function refreshVocalSelects(currentVocal=''){
- const all=allVocalNames(),active=vocalNames.filter(v=>!inactiveVocalNames.includes(v));
+ const all=allVocalNames(),active=cleanVocalistList(vocalNames).filter(v=>!inactiveVocalNames.includes(v));
  vocalSelect.innerHTML='<option value="">Wokal</option>'+all.map(v=>`<option value="${escAttr(v)}">${esc(v)}${inactiveVocalNames.includes(v)?' (nieaktywny)':''}</option>`).join('');
  const editOptions=[...new Set([...active,currentVocal].filter(Boolean))];
  vocalInput.innerHTML=editOptions.map(v=>`<option value="${escAttr(v)}">${esc(v)}${inactiveVocalNames.includes(v)?' (nieaktywny)':''}</option>`).join('')
@@ -1276,6 +1294,7 @@ async function hardDeleteSong(id){
 async function addVocalist(){
  if(!isAdmin)return alert('Tylko Marek / administrator.');
  const n=(newVocalInput.value||'').trim();if(!n)return;
+ if(isReservedNonVocalist(n))return alert('Marek jest administratorem i użytkownikiem aplikacji, ale nie jest wokalistą.');
  if(!vocalNames.includes(n))vocalNames.push(n);
  inactiveVocalNames=inactiveVocalNames.filter(v=>v!==n);newVocalInput.value='';await updateVocalists()
 }
@@ -1285,7 +1304,7 @@ async function removeVocalist(n){
  if(!inactiveVocalNames.includes(n))inactiveVocalNames.push(n);if(activeVocal===n)activeVocal='Wszyscy';await updateVocalists()
 }
 async function restoreVocalist(n){if(!isAdmin)return;inactiveVocalNames=inactiveVocalNames.filter(v=>v!==n);await updateVocalists()}
-async function updateVocalists(){await db.collection('settings').doc('main').set({vocalists:vocalNames,inactiveVocalists:inactiveVocalNames,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
+async function updateVocalists(){vocalNames=cleanVocalistList(vocalNames);inactiveVocalNames=cleanVocalistList(inactiveVocalNames);await db.collection('settings').doc('main').set({vocalists:vocalNames,inactiveVocalists:inactiveVocalNames,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
 function renderSetlists(){
  const h=setlists.map(s=>`<div class="listrow"><span>📋 ${esc(s.name)} <span style="color:var(--m)">(${(s.songs||[]).length})</span></span>${canManageSetlists()&&!s.guest?`<button onclick="deleteSetlist('${s.id}')">×</button>`:''}</div>`).join('')||'<div style="color:var(--m);font-size:13px">Brak setlist.</div>';
  setlistsList.innerHTML=h;
@@ -1573,8 +1592,8 @@ async function importData(e){
    const importedSongs=Array.isArray(imp)?imp:(Array.isArray(imp.songs)?imp.songs:null);
    if(!importedSongs)throw new Error('Brak tablicy songs');
    const importedSetlists=Array.isArray(imp.setlists)?imp.setlists:setlists;
-   const importedVocalists=Array.isArray(imp.vocalists)?imp.vocalists:vocalNames;
-   const importedInactive=Array.isArray(imp.inactiveVocalists)?imp.inactiveVocalists:inactiveVocalNames;
+   const importedVocalists=cleanVocalistList(Array.isArray(imp.vocalists)?imp.vocalists:vocalNames);
+   const importedInactive=cleanVocalistList(Array.isArray(imp.inactiveVocalists)?imp.inactiveVocalists:inactiveVocalNames);
    const importedUsers=Array.isArray(imp.appUsers)?imp.appUsers:appUsers;
    const importedProfiles=Array.isArray(imp.profiles)?imp.profiles:profiles;
    const songIds=new Set(),setlistIds=new Set(),profileIds=new Set();

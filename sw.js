@@ -1,4 +1,4 @@
-const CACHE_NAME='pozorantsi-song-base-secure-rc4-3-band-click-6-continuous-iphone-audio';
+const CACHE_NAME='pozorantsi-song-base-secure-rc4-3-band-click-7-guest-30-days';
 const FILES=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./band-click-track-60.m4a','./band-click-track-150.m4a'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(FILES)).catch(()=>{}));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim();});
