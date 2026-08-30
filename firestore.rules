@@ -43,6 +43,62 @@ service cloud.firestore {
       return hasRole('guest');
     }
 
+    function canUseBandClick() {
+      return isAdmin() || isMember() || isVocalist();
+    }
+
+    function isBandClickMaster() {
+      return isMember()
+        && (
+          get(profilePath()).data.displayName == 'Paweł'
+          || get(profilePath()).data.displayName == 'Pawel'
+        );
+    }
+
+    function validBandClickSession() {
+      return request.resource.data.keys().hasOnly([
+          'playing',
+          'bpm',
+          'beatsPerBar',
+          'countInBars',
+          'setlistId',
+          'setlistName',
+          'songId',
+          'songTitle',
+          'songArtist',
+          'startAt',
+          'revision',
+          'updatedBy',
+          'updatedByUid',
+          'updatedAt'
+        ])
+        && request.resource.data.playing is bool
+        && request.resource.data.bpm is number
+        && request.resource.data.bpm >= 30
+        && request.resource.data.bpm <= 300
+        && request.resource.data.beatsPerBar == 4
+        && request.resource.data.countInBars is int
+        && request.resource.data.countInBars >= 0
+        && request.resource.data.countInBars <= 2
+        && request.resource.data.setlistId is string
+        && request.resource.data.setlistName is string
+        && request.resource.data.songId is string
+        && request.resource.data.songTitle is string
+        && request.resource.data.songArtist is string
+        && (
+          request.resource.data.startAt == null
+          || request.resource.data.startAt is timestamp
+        )
+        && (
+          request.resource.data.playing == false
+          || request.resource.data.startAt is timestamp
+        )
+        && request.resource.data.revision is int
+        && request.resource.data.updatedBy is string
+        && request.resource.data.updatedByUid == request.auth.uid
+        && request.resource.data.updatedAt is timestamp;
+    }
+
     function memberMusicalEdit() {
       return isMember()
         && request.resource.data.updatedUid == request.auth.uid
@@ -114,6 +170,29 @@ service cloud.firestore {
     match /settings/{documentId} {
       allow read: if isAdmin() || isMember() || isVocalist() || isGuest();
       allow create, update, delete: if isAdmin();
+    }
+
+    match /bandClick/session {
+      allow read: if canUseBandClick();
+      allow create, update: if (isAdmin() || isBandClickMaster())
+        && validBandClickSession();
+      allow delete: if isAdmin();
+    }
+
+    match /bandClickClients/{userId} {
+      allow get: if isAdmin() || (canUseBandClick() && request.auth.uid == userId);
+      allow list: if isAdmin();
+      allow create, update: if canUseBandClick()
+        && request.auth.uid == userId
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+          'uid',
+          'displayName',
+          'clientSentAt',
+          'serverTime',
+          'updatedAt'
+        ]);
+      allow delete: if isAdmin() || (canUseBandClick() && request.auth.uid == userId);
     }
 
     match /{document=**} {

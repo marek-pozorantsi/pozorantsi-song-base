@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Pozorantsi Song Base 1.2 Secure RC4.3</title>
+<title>Pozorantsi Song Base — Band Click v2 SOLO</title>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#07111f">
@@ -401,11 +401,43 @@ body.drum-mode{overflow:hidden}
   .drum-tempo{min-width:76px;font-size:34px}
 }
 
+/* Band Click — zsynchronizowany metronom zespołu */
+.band-click-launch{display:none;border:1px solid rgba(255,161,66,.7);background:rgba(255,133,41,.16);color:#ffbd78;border-radius:9px;padding:7px 11px;font-size:12px;font-weight:950;letter-spacing:.8px;cursor:pointer;white-space:nowrap}
+.band-click-launch:hover,.band-click-launch.live{background:rgba(255,133,41,.3);box-shadow:0 0 0 3px rgba(255,145,50,.1)}
+.band-click-launch.live{color:#fff1df;border-color:#ff8d35;animation:bcLaunchPulse 1.2s ease-in-out infinite}
+@keyframes bcLaunchPulse{50%{box-shadow:0 0 0 5px rgba(255,141,53,.12)}}
+.band-click-view{display:none;position:fixed;inset:0;z-index:3200;background:radial-gradient(circle at 50% -15%,#18233b 0,#07101d 44%,#03070d 100%);color:#fff;overflow:auto;overscroll-behavior:contain}
+.band-click-view.open{display:block}
+body.band-click-mode{overflow:hidden}
+.bc-header{position:sticky;top:0;z-index:10;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:13px max(18px,env(safe-area-inset-right)) 13px max(18px,env(safe-area-inset-left));background:rgba(3,7,13,.94);border-bottom:1px solid rgba(255,255,255,.13);backdrop-filter:blur(16px)}
+.bc-back{min-height:46px;border:1px solid rgba(255,255,255,.24);background:#101a28;color:#fff;border-radius:11px;padding:0 16px;font-size:14px;font-weight:900;cursor:pointer}
+.bc-brand{min-width:0;text-align:center}.bc-brand strong{display:block;font-size:20px;letter-spacing:1.5px}.bc-brand span{display:block;margin-top:3px;color:#8c9aaf;font-size:11px;font-weight:800;letter-spacing:.8px}
+.bc-role{justify-self:end;border:1px solid rgba(255,168,82,.45);background:rgba(255,132,38,.13);color:#ffc485;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:950;letter-spacing:.8px;white-space:nowrap}
+.bc-shell{width:min(1180px,100%);margin:0 auto;padding:20px 18px max(34px,env(safe-area-inset-bottom));display:grid;grid-template-columns:minmax(300px,420px) minmax(380px,1fr);gap:18px;align-items:start}
+.bc-card{border:1px solid rgba(255,255,255,.13);background:rgba(8,17,30,.88);border-radius:18px;padding:18px;box-shadow:0 20px 55px rgba(0,0,0,.26)}
+.bc-card-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:15px;color:#fff;font-size:13px;font-weight:950;letter-spacing:1.3px}.bc-card-title span{color:#748297;font-size:10px;letter-spacing:.6px}
+.bc-mode-wrap{margin-bottom:16px}.bc-mode-wrap label{display:block;margin-bottom:7px;color:#8f9caf;font-size:10px;font-weight:950;letter-spacing:1.1px}.bc-mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:5px;border:1px solid rgba(255,255,255,.13);background:#050b14;border-radius:13px}.bc-mode-switch button{min-height:46px;border:1px solid transparent;background:transparent;color:#8491a4;border-radius:9px;font-size:12px;font-weight:950;letter-spacing:1px;cursor:pointer}.bc-mode-switch button.active{border-color:#ff9c48;background:linear-gradient(135deg,rgba(255,132,42,.3),rgba(229,76,26,.19));color:#ffe2c5;box-shadow:0 5px 18px rgba(229,76,26,.12)}
+.bc-field{margin:12px 0}.bc-field label{display:block;margin-bottom:7px;color:#8f9caf;font-size:10px;font-weight:950;letter-spacing:1.1px}.bc-field select,.bc-field input[type=number]{width:100%;height:48px;border:1px solid rgba(255,255,255,.17);background:#050c16;color:#fff;border-radius:11px;padding:0 12px;font-size:15px;font-weight:800;outline:none}.bc-field select:focus,.bc-field input:focus{border-color:#ff9c48;box-shadow:0 0 0 3px rgba(255,145,54,.1)}.bc-field select:disabled,.bc-field input:disabled{opacity:.62;color:#afbac9}
+.bc-tempo-row{display:grid;grid-template-columns:46px minmax(90px,1fr) 46px;gap:8px}.bc-step{border:1px solid rgba(255,255,255,.17);background:#101a28;color:#fff;border-radius:11px;font-size:24px;font-weight:900;cursor:pointer}.bc-step:disabled{opacity:.42;cursor:default}
+.bc-segment{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.bc-segment button{height:43px;border:1px solid rgba(255,255,255,.16);background:#0b1421;color:#aeb8c7;border-radius:10px;font-size:13px;font-weight:900;cursor:pointer}.bc-segment button.active{border-color:#ff9c48;background:rgba(255,142,57,.22);color:#ffe2c5}.bc-segment button:disabled{opacity:.5;cursor:default}
+.bc-actions{display:grid;grid-template-columns:1fr 1.35fr;gap:9px;margin-top:16px}.bc-audio-btn,.bc-start-btn{min-height:54px;border-radius:12px;font-size:13px;font-weight:950;letter-spacing:.8px;cursor:pointer}.bc-audio-btn{border:1px solid rgba(76,191,255,.45);background:rgba(36,137,191,.14);color:#8cddff}.bc-audio-btn.ready{border-color:rgba(59,212,142,.45);background:rgba(35,181,117,.13);color:#7cf2bd}.bc-start-btn{border:1px solid #ff9643;background:linear-gradient(135deg,#ff842a,#e54c1a);color:white;box-shadow:0 9px 28px rgba(229,76,26,.2)}.bc-start-btn.stop{border-color:#ff6c76;background:linear-gradient(135deg,#e63b49,#a51624)}.bc-start-btn:disabled{filter:grayscale(.6);opacity:.5;cursor:default;box-shadow:none}
+.bc-master-note{margin-top:13px;border:1px solid rgba(255,255,255,.1);background:#050b14;border-radius:10px;padding:10px;color:#8794a7;font-size:11px;line-height:1.45}.bc-master-note strong{color:#ffc584}
+.bc-stage{position:relative;overflow:hidden;min-height:510px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.bc-stage::before{content:"";position:absolute;inset:-30%;background:radial-gradient(circle,rgba(255,126,31,.1),transparent 55%);pointer-events:none}.bc-flash{position:absolute;inset:0;background:radial-gradient(circle,rgba(255,244,197,.42),rgba(255,132,32,.12) 35%,transparent 68%);opacity:0;pointer-events:none}.bc-flash.on{animation:bcFlash .18s ease-out}@keyframes bcFlash{0%{opacity:1}100%{opacity:0}}
+.bc-now-status{position:relative;z-index:1;color:#ffb36c;font-size:12px;font-weight:950;letter-spacing:1.6px}.bc-song-title{position:relative;z-index:1;width:100%;margin:9px 0 2px;font-size:clamp(24px,4vw,42px);line-height:1.05;font-weight:950;overflow-wrap:anywhere}.bc-song-artist{position:relative;z-index:1;color:#4cbfff;font-size:17px;font-weight:850;min-height:23px}.bc-bpm-display{position:relative;z-index:1;margin:20px 0 5px;font-size:clamp(58px,9vw,90px);line-height:.86;font-weight:950;font-variant-numeric:tabular-nums}.bc-bpm-display span{display:block;margin-top:12px;color:#7f8b9d;font-size:11px;letter-spacing:2px}
+.bc-pendulum{position:relative;z-index:1;width:min(360px,78vw);height:120px;margin:12px auto 5px}.bc-pendulum-base{position:absolute;left:50%;bottom:9px;width:52px;height:9px;transform:translateX(-50%);background:#526075;border-radius:99px}.bc-pendulum-arm{position:absolute;left:50%;bottom:15px;width:5px;height:91px;transform-origin:50% 100%;transform:translateX(-50%) rotate(-42deg);background:linear-gradient(#ffb466,#d8e2ef);border-radius:99px;will-change:transform}.bc-pendulum-weight{position:absolute;left:50%;top:-7px;width:25px;height:25px;transform:translateX(-50%);border-radius:50%;background:#ff9a45;box-shadow:0 0 24px rgba(255,145,57,.45)}
+.bc-beats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);gap:9px;width:min(460px,100%);margin-top:9px}.bc-beat{height:66px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.16);background:#09111d;border-radius:12px;color:#758195;font-size:23px;font-weight:950}.bc-beat.active{border-color:#56c9ff;background:rgba(51,164,219,.24);color:#eaf9ff;transform:translateY(-2px)}.bc-beat.active.downbeat{border-color:#ff9b48;background:rgba(255,131,33,.34);color:#fff4e7;box-shadow:0 0 28px rgba(255,130,32,.23)}
+.bc-local{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr auto;gap:18px;align-items:end}.bc-range-wrap label{display:flex;justify-content:space-between;gap:10px;margin-bottom:9px;color:#a8b3c2;font-size:11px;font-weight:900}.bc-range-wrap input[type=range]{width:100%;accent-color:#ff9342}.bc-offset-input{width:88px!important;height:38px!important;display:inline-block!important;text-align:right}.bc-network{align-self:center;justify-self:end;text-align:right;color:#73e9b5;font-size:11px;font-weight:900;line-height:1.5}.bc-network.offline{color:#ffc36e}.bc-help{grid-column:1 / -1;color:#748196;font-size:10px;line-height:1.5;border-top:1px solid rgba(255,255,255,.08);padding-top:11px}
+@media(max-width:900px){
+  .band-click-launch{position:absolute;right:72px;top:12px;z-index:45;min-height:36px;padding:0 10px}
+  .bc-header{grid-template-columns:auto 1fr auto;padding-top:max(58px,calc(env(safe-area-inset-top,0px) + 10px));gap:8px}.bc-back{min-height:43px;padding:0 11px;font-size:12px}.bc-brand strong{font-size:17px}.bc-brand span{font-size:9px}.bc-role{padding:7px 9px;font-size:9px}
+  .bc-shell{grid-template-columns:1fr;padding:12px 10px max(26px,env(safe-area-inset-bottom));gap:12px}.bc-card{padding:14px;border-radius:15px}.bc-stage{min-height:440px}.bc-local{grid-column:auto;grid-template-columns:1fr}.bc-network{justify-self:start;text-align:left}.bc-actions{position:sticky;bottom:max(8px,env(safe-area-inset-bottom));z-index:4}.bc-pendulum{height:105px}.bc-pendulum-arm{height:78px}.bc-beat{height:58px}
+}
+
 </style>
 </head>
 <body>
 <div class="app" id="app">
-<header><div class="brand"><div class="brand-main">pozorants<span class="orange">i</span></div><div class="brand-sub">SONG BASE</div></div><div class="top-stats"><span style="color:var(--v2);font-size:24px">♫</span><span id="totalCount">Ładowanie bazy…</span><span class="sync" id="syncStatus">Wymagane logowanie</span><button id="drumLaunchBtn" class="drum-launch" onclick="openDrumView()">DRUM</button><span class="role-badge" id="roleBadge">—</span></div><div class="top-actions"><button class="top-btn" onclick="openUserModal()">Użytkownik: <span id="userLabel">—</span></button><button class="top-btn" id="logoutBtn" onclick="logoutUser()" style="display:none">Wyloguj</button><input id="importFile" type="file" accept=".json" style="display:none" onchange="importData(event)"><button class="icon-btn" onclick="toggleLeft()">☰</button><button class="icon-btn" onclick="toggleRight()">ⓘ</button></div></header>
+<header><div class="brand"><div class="brand-main">pozorants<span class="orange">i</span></div><div class="brand-sub">SONG BASE</div></div><div class="top-stats"><span style="color:var(--v2);font-size:24px">♫</span><span id="totalCount">Ładowanie bazy…</span><span class="sync" id="syncStatus">Wymagane logowanie</span><button id="bandClickLaunchBtn" class="band-click-launch" onclick="openBandClick()">CLICK</button><button id="drumLaunchBtn" class="drum-launch" onclick="openDrumView()">DRUM</button><span class="role-badge" id="roleBadge">—</span></div><div class="top-actions"><button class="top-btn" onclick="openUserModal()">Użytkownik: <span id="userLabel">—</span></button><button class="top-btn" id="logoutBtn" onclick="logoutUser()" style="display:none">Wyloguj</button><input id="importFile" type="file" accept=".json" style="display:none" onchange="importData(event)"><button class="icon-btn" onclick="toggleLeft()">☰</button><button class="icon-btn" onclick="toggleRight()">ⓘ</button></div></header>
 <aside class="left"><button class="side-toggle" onclick="toggleLeft()" id="leftToggle">›</button><div class="side-content">
 <div class="card"><div class="card-title">▽ FILTRY</div><div class="group"><div class="label">STATUS</div><div id="statusFilters"></div></div><div class="group"><div class="label">WOKAL</div><div id="vocalFilters"></div></div><div class="group" id="vocalAdminGroup"><div class="label">EDYCJA WOKALISTÓW</div><div class="addrow"><input id="newVocalInput" placeholder="Dodaj osobę..."><button onclick="addVocalist()">+</button></div><div id="vocalManager"></div></div></div>
 <div class="card"><div class="card-title">SETLISTY <button class="more" id="setlistOpenBtn" onclick="openSetlistsModal()">＋</button></div><div class="group"><div class="addrow" id="setlistCreateGroup"><input id="newSetlistInput" placeholder="Nowa setlista..."><button onclick="addSetlist()">+</button></div><div id="setlistsList"></div></div></div>
@@ -421,6 +453,82 @@ body.drum-mode{overflow:hidden}
     <input id="drumSearch" class="drum-search" type="search" inputmode="search" autocomplete="off" placeholder="Szukaj utworu lub wykonawcy…" oninput="renderDrumList()">
   </div>
   <div id="drumList" class="drum-list"></div>
+</section>
+<section id="bandClickView" class="band-click-view" aria-hidden="true">
+  <div class="bc-header">
+    <button type="button" class="bc-back" onclick="closeBandClick()">← WRÓĆ</button>
+    <div class="bc-brand"><strong>BAND CLICK</strong><span id="bcBrandSub">METRONOM SOLO • LOKALNY DŹWIĘK</span></div>
+    <div id="bcRole" class="bc-role">FOLLOWER</div>
+  </div>
+  <div class="bc-shell">
+    <div class="bc-card">
+      <div class="bc-card-title">STEROWANIE <span id="bcControlOwner">STEROWANIE: MOJE</span></div>
+      <div class="bc-mode-wrap">
+        <label>TRYB METRONOMU</label>
+        <div class="bc-mode-switch" role="group" aria-label="Tryb metronomu">
+          <button id="bcModeSolo" type="button" onclick="bandClickSetMode('solo')">SOLO</button>
+          <button id="bcModeBand" type="button" onclick="bandClickSetMode('band')">BAND</button>
+        </div>
+      </div>
+      <div class="bc-field">
+        <label>SETLISTA</label>
+        <select id="bcSetlist" onchange="bandClickSetlistChanged()"><option value="">Cała baza utworów</option></select>
+      </div>
+      <div class="bc-field">
+        <label>UTWÓR</label>
+        <select id="bcSong" onchange="bandClickSongChanged()"><option value="">Tempo ręczne</option></select>
+      </div>
+      <div class="bc-field">
+        <label>TEMPO BPM</label>
+        <div class="bc-tempo-row">
+          <button id="bcMinus" class="bc-step" type="button" onclick="bandClickStepBpm(-1)">−</button>
+          <input id="bcBpm" type="number" min="30" max="300" step="1" value="120" inputmode="numeric" onchange="bandClickBpmChanged()">
+          <button id="bcPlus" class="bc-step" type="button" onclick="bandClickStepBpm(1)">+</button>
+        </div>
+      </div>
+      <div class="bc-field">
+        <label>COUNT-IN</label>
+        <div class="bc-segment">
+          <button id="bcCount0" type="button" onclick="bandClickSetCountIn(0)">0 taktów</button>
+          <button id="bcCount1" type="button" onclick="bandClickSetCountIn(1)">1 takt</button>
+          <button id="bcCount2" type="button" onclick="bandClickSetCountIn(2)">2 takty</button>
+        </div>
+      </div>
+      <div class="bc-actions">
+        <button id="bcAudioBtn" class="bc-audio-btn" type="button" onclick="unlockBandClickAudio()">WŁĄCZ DŹWIĘK</button>
+        <button id="bcStartBtn" class="bc-start-btn" type="button" onclick="bandClickToggleStart()">START</button>
+      </div>
+      <div id="bcModeNote" class="bc-master-note"><strong>Tryb SOLO.</strong> Sam wybierasz utwór lub BPM i uruchamiasz metronom. Paweł nie jest potrzebny; klik działa lokalnie na tym telefonie.</div>
+    </div>
+
+    <div class="bc-card bc-stage">
+      <div id="bcFlash" class="bc-flash"></div>
+      <div id="bcNowStatus" class="bc-now-status">GOTOWY</div>
+      <div id="bcSongTitle" class="bc-song-title">Tempo ręczne</div>
+      <div id="bcSongArtist" class="bc-song-artist">Pozorantsi</div>
+      <div id="bcBpmDisplay" class="bc-bpm-display">120<span>BPM</span></div>
+      <div class="bc-pendulum" aria-hidden="true">
+        <div class="bc-pendulum-base"></div>
+        <div id="bcPendulumArm" class="bc-pendulum-arm"><div class="bc-pendulum-weight"></div></div>
+      </div>
+      <div class="bc-beats" aria-label="Metrum 4/4">
+        <div id="bcBeat1" class="bc-beat">1</div><div id="bcBeat2" class="bc-beat">2</div><div id="bcBeat3" class="bc-beat">3</div><div id="bcBeat4" class="bc-beat">4</div>
+      </div>
+    </div>
+
+    <div class="bc-card bc-local">
+      <div class="bc-range-wrap">
+        <label><span>MOJA GŁOŚNOŚĆ</span><span id="bcVolumeLabel">70%</span></label>
+        <input id="bcVolume" type="range" min="0" max="100" step="1" value="70" oninput="bandClickVolumeChanged(this.value)">
+      </div>
+      <div class="bc-range-wrap">
+        <label><span>MÓJ AUDIO OFFSET</span><span><input id="bcOffsetNumber" class="bc-offset-input" type="number" min="-250" max="500" step="1" value="0" onchange="bandClickOffsetNumberChanged(this.value)"> ms</span></label>
+        <input id="bcOffset" type="range" min="-250" max="500" step="1" value="0" oninput="bandClickOffsetChanged(this.value)">
+      </div>
+      <div id="bcNetwork" class="bc-network">ŁĄCZENIE…</div>
+      <div class="bc-help">Dodatni Audio Offset odtwarza klik wcześniej i kompensuje opóźnienie słuchawek Bluetooth. Po utracie internetu rozpoczęty metronom nadal pracuje lokalnie na ostatnim zsynchronizowanym tempie.</div>
+    </div>
+  </div>
 </section>
 <button id="playerToggleBtn" class="player-toggle" onclick="togglePlayerBar()">Schowaj player</button>
 <div class="modal auth-gate open" id="authModal"><div class="modal-box" style="width:460px"><h2>Logowanie do Song Base</h2><p class="admin-help">Członkowie zespołu i wokalistki logują się swoim adresem e-mail.</p><label>Adres e-mail</label><input id="authEmailInput" type="email" autocomplete="username" placeholder="E-mail"><label>Hasło</label><input id="authPasswordInput" type="password" autocomplete="current-password" placeholder="Hasło" onkeydown="if(event.key==='Enter')loginUser()"><div id="authError" class="auth-error"></div><div class="modal-actions"><button class="top-btn" onclick="sendPasswordReset()">Nie pamiętam hasła</button><button class="add-btn" id="loginBtn" style="padding:0 18px" onclick="loginUser()">Zaloguj</button></div><div class="guest-login-box"><div class="guest-login-title">Dostęp dla gościa</div><p class="guest-login-help">Wpisz wyłącznie otrzymane hasło. Adres techniczny zostanie użyty automatycznie.</p><div class="guest-login-actions"><input id="guestPasswordInput" type="password" autocomplete="current-password" placeholder="Hasło gościa" onkeydown="if(event.key==='Enter')loginGuest()"><button class="wait-btn" id="guestLoginBtn" onclick="loginGuest()">Wejdź jako gość</button></div></div></div></div>
@@ -458,6 +566,9 @@ const STATUS=['🔥 Hit koncertowy','🟢 Gotowy','🟡 W przygotowaniu','⚫ Ar
 let songs=[],vocalNames=[],inactiveVocalNames=[],appUsers=[],setlists=[],profiles=[],selectedId=null,currentSong=null,activeLetter='',activeStatus='Wszystkie',activeVocal='Wszyscy',editingId=null,userName='',isAdmin=false,authUser=null,currentProfile=null,currentRole='none',firebaseStarted=false,player=null,progressTimer=null,expiryTimer=null,profileUnsubscribe=null;
 const ROLE_LABELS={admin:'ADMIN',member:'CZŁONEK ZESPOŁU',vocalist:'WOKAL',guest:'GOŚĆ'};
 const VALID_ROLES=['member','vocalist','guest'];
+const BAND_CLICK_MASTER_NAME='Paweł';
+const BAND_CLICK_DEFAULT_STATE={playing:false,bpm:120,beatsPerBar:4,countInBars:1,setlistId:'',setlistName:'',songId:'',songTitle:'Tempo ręczne',songArtist:'Pozorantsi',startAtMs:0,revision:0,updatedBy:'',updatedByUid:''};
+let bandClickMode=localStorage.getItem('pozorantsi_bc_mode')==='band'?'band':'solo',bandClickState={...BAND_CLICK_DEFAULT_STATE},bandClickSoloState={...BAND_CLICK_DEFAULT_STATE},bandClickUnsubscribe=null,bandClickAudioContext=null,bandClickAudioUnlocked=false,bandClickSchedulerTimer=null,bandClickVisualFrame=null,bandClickNextBeatIndex=0,bandClickClockOffsetMs=Number(localStorage.getItem('pozorantsi_bc_clock_offset')||0),bandClickClockReady=false,bandClickLastBeat=-1,bandClickLastSnapshotAt=0,bandClickStarting=false;
 const persistenceReady=Promise.resolve();
 window.onYouTubeIframeAPIReady=()=>{setTimeout(prewarmPlayer,300)};
 function init(){
@@ -471,6 +582,7 @@ function init(){
 async function handleAuthState(u){
  authUser=u||null;
  if(!authUser){
+   stopBandClickModule(true);
    isAdmin=false;currentProfile=null;currentRole='none';userName='';userLabel.textContent='—';logoutBtn.style.display='none';
    totalCount.textContent='Zaloguj się';syncStatus.textContent='Wymagane logowanie';
    authModal.classList.add('open');updateAdminUi();return
@@ -566,7 +678,7 @@ async function sendPasswordReset(){
 async function logoutUser(){if(!confirm('Wylogować z aplikacji?'))return;await auth.signOut();location.reload()}
 function listenFirebase(){
  firebaseStarted=true;syncStatus.textContent='Firebase: online';
- listenFullFirebase();if(isAdmin)listenProfiles()
+ listenFullFirebase();listenBandClick();if(isAdmin)listenProfiles()
 }
 function listenFullFirebase(){
  db.collection('settings').doc('main').onSnapshot(async d=>{
@@ -581,9 +693,10 @@ function listenFullFirebase(){
  db.collection('songs').orderBy('artist').onSnapshot(snap=>{
    songs=snap.docs.map(d=>({id:d.id,...d.data()}));if(!selectedId&&songs.length)selectedId=songs[0].id;
    refreshVocalSelects();renderSidebar();render();renderDetails();setTimeout(prewarmPlayer,700);
+   renderBandClickControls();
    if(window.waitlistModal&&waitlistModal.classList.contains('open'))renderWaitlist()
  },e=>{syncStatus.textContent='Błąd Firebase';console.error(e)});
- db.collection('setlists').orderBy('name').onSnapshot(snap=>{setlists=snap.docs.map(d=>({id:d.id,...d.data()}));renderSetlists()},e=>{syncStatus.textContent='Błąd setlist';console.error(e)})
+ db.collection('setlists').orderBy('name').onSnapshot(snap=>{setlists=snap.docs.map(d=>({id:d.id,...d.data()}));renderSetlists();renderBandClickControls()},e=>{syncStatus.textContent='Błąd setlist';console.error(e)})
 }
 function listenProfiles(){
  db.collection('profiles').onSnapshot(snap=>{profiles=snap.docs.map(d=>({uid:d.id,...d.data()})).sort((a,b)=>String(a.displayName||'').localeCompare(String(b.displayName||''),'pl'));renderUserManager()},e=>console.error('Profiles',e))
@@ -654,9 +767,11 @@ function updateAdminUi(){
  const dot=document.getElementById('adminDot');
  const badge=document.getElementById('roleBadge');
  const drumButton=document.getElementById('drumLaunchBtn');
+ const clickButton=document.getElementById('bandClickLaunchBtn');
  if(dot){dot.classList.toggle('admin-on',isAdmin);dot.style.display=isAdmin?'block':'none'}
  if(badge){badge.textContent=ROLE_LABELS[currentRole]||'';badge.classList.toggle('show',!!authUser&&currentRole!=='none')}
  if(drumButton)drumButton.style.display=authUser&&currentRole!=='none'?'inline-block':'none';
+ if(clickButton)clickButton.style.display=canUseBandClick()?'inline-block':'none';
  if(window.vocalAdminGroup)vocalAdminGroup.style.display=isAdmin?'block':'none';
  if(window.mainAddBtn)mainAddBtn.style.display=isAdmin?'block':'none';
  if(window.waitlistBtn)waitlistBtn.style.display=canUseWaitlist()?'block':'none';
@@ -664,8 +779,11 @@ function updateAdminUi(){
  if(window.setlistModalCreate)setlistModalCreate.style.display=canManageSetlists()?'grid':'none';
  if(window.setlistsHelp)setlistsHelp.textContent=canManageSetlists()?'Setlisty są wspólne i mogą być edytowane przez członków zespołu.':currentRole==='guest'?'Czasowy dostęp: cały repertuar i setlisty są dostępne tylko do odczytu.':'Setlisty są dostępne tylko do odczytu.';
  if(window.userLabel)userLabel.textContent=userName||'—';
+ updateBandClickUi();
 }
 function canManageMain(){return isAdmin}function canEditSongs(){return isAdmin||currentRole==='member'}function canManageSetlists(){return isAdmin||currentRole==='member'}function canUseWaitlist(){return isAdmin||currentRole==='member'||currentRole==='vocalist'}function canRequestDelete(){return isAdmin||currentRole==='member'}
+function canUseBandClick(){return !!authUser&&(isAdmin||currentRole==='member'||currentRole==='vocalist')}
+function isBandClickMaster(){const n=String(userName||'').trim().toLocaleLowerCase('pl'),master=BAND_CLICK_MASTER_NAME.toLocaleLowerCase('pl');return currentRole==='member'&&(n===master||n==='pawel')}
 function requireAdminMain(){if(!canManageMain()){alert('Tylko administrator może dodawać, usuwać lub przenosić utwory do bazy głównej.');return false}return true}
 function requireSongEdit(){if(!canEditSongs()){alert('Twoja rola pozwala na podgląd repertuaru, ale nie na edycję głównych danych utworów.');return false}return true}
 function requireSetlistEdit(){if(!canManageSetlists()){alert('Setlisty są dla tego konta dostępne tylko do odczytu.');return false}return true}
@@ -741,7 +859,259 @@ function closeDrumView(){
  view.classList.remove('open');
  view.setAttribute('aria-hidden','true');
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('drum-mode'))closeDrumView()});
+
+function bandClickSessionRef(){return db.collection('bandClick').doc('session')}
+function clampBandClickBpm(value){const n=Math.round(Number(value)||120);return Math.max(30,Math.min(300,n))}
+function clampBandClickOffset(value){const n=Math.round(Number(value)||0);return Math.max(-250,Math.min(500,n))}
+function bandClickTimestampMs(value){if(value&&typeof value.toMillis==='function')return value.toMillis();if(value&&Number.isFinite(value.seconds))return value.seconds*1000+Math.floor(Number(value.nanoseconds||0)/1000000);return Number(value||0)}
+function normaliseBandClickState(raw={}){
+ const count=Math.max(0,Math.min(2,Math.round(Number(raw.countInBars)||0)));
+ return{
+  playing:raw.playing===true,
+  bpm:clampBandClickBpm(raw.bpm),
+  beatsPerBar:4,
+  countInBars:count,
+  setlistId:String(raw.setlistId||''),setlistName:String(raw.setlistName||''),
+  songId:String(raw.songId||''),songTitle:String(raw.songTitle||'Tempo ręczne'),songArtist:String(raw.songArtist||'Pozorantsi'),
+  startAtMs:bandClickTimestampMs(raw.startAt||raw.startAtMs),
+  revision:Number(raw.revision||0),updatedBy:String(raw.updatedBy||''),updatedByUid:String(raw.updatedByUid||'')
+ }
+}
+function bandClickIsSolo(){return bandClickMode==='solo'}
+function activeBandClickState(){return bandClickIsSolo()?bandClickSoloState:bandClickState}
+function bandClickCanControl(){return bandClickIsSolo()||isBandClickMaster()}
+function rememberBandClickState(){
+ try{localStorage.setItem('pozorantsi_bc_last_state',JSON.stringify({...bandClickState,startAtMs:Number(bandClickState.startAtMs||0)}))}catch{}
+}
+function restoreBandClickState(){
+ try{const saved=JSON.parse(localStorage.getItem('pozorantsi_bc_last_state')||'null');if(saved)bandClickState=normaliseBandClickState(saved)}catch{}
+}
+function rememberBandClickSoloState(){
+ try{localStorage.setItem('pozorantsi_bc_solo_state',JSON.stringify({...bandClickSoloState,playing:false,startAtMs:0}))}catch{}
+}
+function restoreBandClickSoloState(){
+ try{const saved=JSON.parse(localStorage.getItem('pozorantsi_bc_solo_state')||'null');if(saved)bandClickSoloState=normaliseBandClickState({...saved,playing:false,startAtMs:0})}catch{}
+}
+function bandClickServerNow(){return Date.now()+Number(bandClickClockOffsetMs||0)}
+function bandClickNow(){return bandClickIsSolo()?Date.now():bandClickServerNow()}
+function setBandClickNetwork(text,offline=false){const node=document.getElementById('bcNetwork');if(!node)return;node.textContent=text;node.classList.toggle('offline',offline)}
+function updateBandClickNetwork(){
+ if(bandClickIsSolo())return setBandClickNetwork('SOLO • KLIK DZIAŁA LOKALNIE',false);
+ if(!navigator.onLine)return setBandClickNetwork('OFFLINE • GRA LOKALNIE',true);
+ setBandClickNetwork(bandClickLastSnapshotAt?'ONLINE • ZSYNCHRONIZOWANO':'ŁĄCZENIE…',false)
+}
+function listenBandClick(){
+ if(bandClickUnsubscribe){bandClickUnsubscribe();bandClickUnsubscribe=null}
+ if(!canUseBandClick())return;
+ restoreBandClickState();restoreBandClickSoloState();renderBandClickControls();updateBandClickUi();updateBandClickNetwork();
+ bandClickUnsubscribe=bandClickSessionRef().onSnapshot({includeMetadataChanges:true},snap=>{
+   bandClickLastSnapshotAt=Date.now();
+   if(snap.exists)applyBandClickState(normaliseBandClickState(snap.data()));
+   if(!bandClickIsSolo())setBandClickNetwork(snap.metadata&&snap.metadata.fromCache?'OFFLINE • GRA LOKALNIE':'ONLINE • ZSYNCHRONIZOWANO',!!(snap.metadata&&snap.metadata.fromCache));
+ },error=>{
+   console.error('Band Click listener',error);
+   if(!bandClickIsSolo())setBandClickNetwork('OFFLINE • GRA LOKALNIE',true);
+ });
+ if(!bandClickIsSolo())calibrateBandClickClock();
+}
+async function calibrateBandClickClock(){
+ if(bandClickIsSolo()||!authUser||!canUseBandClick()||!navigator.onLine)return;
+ const started=Date.now();
+ try{
+   const ref=db.collection('bandClickClients').doc(authUser.uid);
+   await ref.set({uid:authUser.uid,displayName:userName,clientSentAt:started,serverTime:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+   const snap=await ref.get({source:'server'}),finished=Date.now(),serverStamp=snap.data()&&snap.data().serverTime;
+   if(!serverStamp||typeof serverStamp.toMillis!=='function')return;
+   const estimate=serverStamp.toMillis()+Math.max(0,finished-started)/2-finished;
+   if(Number.isFinite(estimate)&&Math.abs(estimate)<300000){
+     bandClickClockOffsetMs=estimate;bandClickClockReady=true;
+     localStorage.setItem('pozorantsi_bc_clock_offset',String(Math.round(estimate)));
+     if(!bandClickIsSolo()&&bandClickState.playing&&bandClickAudioUnlocked)beginBandClickScheduler();
+   }
+ }catch(error){console.warn('Band Click clock calibration',error)}
+}
+function applyBandClickState(next){
+ const restart=next.playing&&(!bandClickState.playing||next.revision!==bandClickState.revision||next.bpm!==bandClickState.bpm||next.startAtMs!==bandClickState.startAtMs);
+ const stop=!next.playing&&bandClickState.playing;
+ bandClickState=next;rememberBandClickState();
+ if(bandClickIsSolo())return;
+ renderBandClickControls();updateBandClickUi();
+ if(stop)stopBandClickScheduler();
+ if(restart&&bandClickAudioUnlocked)beginBandClickScheduler();
+ if(document.body.classList.contains('band-click-mode'))startBandClickVisuals();
+}
+function applyBandClickSoloState(next){
+ const restart=next.playing&&(!bandClickSoloState.playing||next.revision!==bandClickSoloState.revision||next.bpm!==bandClickSoloState.bpm||next.startAtMs!==bandClickSoloState.startAtMs);
+ const stop=!next.playing&&bandClickSoloState.playing;
+ bandClickSoloState=next;rememberBandClickSoloState();
+ if(!bandClickIsSolo())return;
+ renderBandClickControls();updateBandClickUi();
+ if(stop)stopBandClickScheduler();
+ if(restart&&bandClickAudioUnlocked)beginBandClickScheduler();
+ if(document.body.classList.contains('band-click-mode'))startBandClickVisuals();
+}
+function bandClickSetMode(mode){
+ const nextMode=mode==='band'?'band':'solo';if(nextMode===bandClickMode)return;
+ stopBandClickScheduler();
+ if(bandClickIsSolo()&&bandClickSoloState.playing){bandClickSoloState=normaliseBandClickState({...bandClickSoloState,playing:false,startAtMs:0,revision:bandClickSoloState.revision+1});rememberBandClickSoloState()}
+ bandClickMode=nextMode;localStorage.setItem('pozorantsi_bc_mode',bandClickMode);bandClickLastBeat=-1;
+ renderBandClickControls();updateBandClickUi();updateBandClickNetwork();startBandClickVisuals();
+ if(activeBandClickState().playing&&bandClickAudioUnlocked)beginBandClickScheduler();
+ if(!bandClickIsSolo()&&navigator.onLine)calibrateBandClickClock()
+}
+function bandClickEligibleSongs(setlistId=activeBandClickState().setlistId){
+ const allowed=songs.filter(s=>!s.pendingDelete&&!String(s.status||'').includes('Poczekalnia')&&!String(s.status||'').includes('Archiwalny'));
+ if(setlistId){
+   const set=setlists.find(x=>x.id===setlistId);if(set)return(set.songs||[]).map(id=>allowed.find(s=>s.id===id)).filter(Boolean)
+ }
+ return [...allowed].sort((a,b)=>(String(a.artist||'')+String(a.title||'')).localeCompare(String(b.artist||'')+String(b.title||''),'pl'))
+}
+function renderBandClickControls(){
+ const setNode=document.getElementById('bcSetlist'),songNode=document.getElementById('bcSong');if(!setNode||!songNode)return;
+ const state=activeBandClickState(),canControl=bandClickCanControl(),locked=!canControl||state.playing||bandClickStarting;
+ const soloMode=document.getElementById('bcModeSolo'),bandMode=document.getElementById('bcModeBand');if(soloMode)soloMode.classList.toggle('active',bandClickIsSolo());if(bandMode)bandMode.classList.toggle('active',!bandClickIsSolo());
+ setNode.innerHTML='<option value="">Cała baza utworów</option>'+setlists.filter(s=>!s.guest).map(s=>`<option value="${escAttr(s.id)}">${esc(s.name)} (${(s.songs||[]).length})</option>`).join('');
+ if([...setNode.options].some(o=>o.value===state.setlistId))setNode.value=state.setlistId;else setNode.value='';
+ const available=bandClickEligibleSongs(setNode.value);
+ songNode.innerHTML='<option value="">Tempo ręczne</option>'+available.map(s=>`<option value="${escAttr(s.id)}">${esc(s.artist)} — ${esc(s.title)}${s.bpm?` (${esc(s.bpm)} BPM)`:' (brak BPM)'}</option>`).join('');
+ if(state.songId&&!available.some(s=>s.id===state.songId))songNode.innerHTML+=`<option value="${escAttr(state.songId)}">${esc(state.songArtist)} — ${esc(state.songTitle)}</option>`;
+ songNode.value=state.songId||'';
+ setNode.disabled=locked;songNode.disabled=locked;
+ const bpm=document.getElementById('bcBpm');if(bpm){bpm.value=state.bpm;bpm.disabled=locked}
+ ['bcMinus','bcPlus'].forEach(id=>{const n=document.getElementById(id);if(n)n.disabled=locked});
+ [0,1,2].forEach(n=>{const b=document.getElementById('bcCount'+n);if(b){b.classList.toggle('active',state.countInBars===n);b.disabled=locked}});
+ const start=document.getElementById('bcStartBtn');if(start){start.disabled=!canControl||bandClickStarting;start.textContent=canControl?(state.playing?'STOP':(bandClickIsSolo()?'START SOLO':'START')):'STERUJE PAWEŁ';start.classList.toggle('stop',state.playing)}
+}
+function updateBandClickUi(){
+ const state=activeBandClickState(),master=isBandClickMaster(),role=document.getElementById('bcRole'),owner=document.getElementById('bcControlOwner'),brand=document.getElementById('bcBrandSub'),note=document.getElementById('bcModeNote');
+ if(role)role.textContent=bandClickIsSolo()?'SOLO • LOKALNY':(master?`MASTER • ${BAND_CLICK_MASTER_NAME.toLocaleUpperCase('pl')}`:'FOLLOWER');
+ if(owner)owner.textContent=bandClickIsSolo()?'STEROWANIE: MOJE':'MASTER: '+BAND_CLICK_MASTER_NAME.toLocaleUpperCase('pl');
+ if(brand)brand.textContent=bandClickIsSolo()?'METRONOM SOLO • LOKALNY DŹWIĘK':'WSPÓLNE TEMPO • LOKALNY DŹWIĘK';
+ if(note)note.innerHTML=bandClickIsSolo()?'<strong>Tryb SOLO.</strong> Sam wybierasz utwór lub BPM i uruchamiasz metronom. Paweł nie jest potrzebny; klik działa lokalnie na tym telefonie.':'<strong>Paweł jest MASTEREM.</strong> Pozostali członkowie zespołu odbierają utwór, BPM oraz START/STOP. Każdy telefon generuje klik lokalnie.';
+ const title=document.getElementById('bcSongTitle'),artist=document.getElementById('bcSongArtist'),bpm=document.getElementById('bcBpmDisplay');
+ if(title)title.textContent=state.songTitle||'Tempo ręczne';if(artist)artist.textContent=state.songArtist||'Pozorantsi';if(bpm)bpm.innerHTML=`${state.bpm}<span>BPM</span>`;
+ const launch=document.getElementById('bandClickLaunchBtn');if(launch)launch.classList.toggle('live',state.playing);
+ const volume=Math.max(0,Math.min(100,Math.round(Number(localStorage.getItem('pozorantsi_bc_volume')||70)||0)));bandClickVolumeChanged(volume,false);
+ const offset=clampBandClickOffset(localStorage.getItem('pozorantsi_bc_offset')||0);bandClickOffsetChanged(offset,false);
+ renderBandClickControls();
+}
+function applyActiveBandClickPatch(patch){
+ if(!bandClickIsSolo())return writeBandClickState(patch);
+ const next=normaliseBandClickState({...bandClickSoloState,...patch,updatedBy:userName,updatedByUid:authUser?.uid||''});applyBandClickSoloState(next);return Promise.resolve()
+}
+async function writeBandClickState(patch){
+ if(bandClickIsSolo())throw new Error('Tryb SOLO nie zapisuje wspólnej sesji.');
+ if(!isBandClickMaster())throw new Error('Tylko Paweł może sterować Band Click.');
+ const next=normaliseBandClickState({...bandClickState,...patch,updatedBy:userName,updatedByUid:authUser.uid});
+ const payload={playing:next.playing,bpm:next.bpm,beatsPerBar:4,countInBars:next.countInBars,setlistId:next.setlistId,setlistName:next.setlistName,songId:next.songId,songTitle:next.songTitle,songArtist:next.songArtist,startAt:next.startAtMs?firebase.firestore.Timestamp.fromMillis(next.startAtMs):null,revision:next.revision,updatedBy:userName,updatedByUid:authUser.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+ applyBandClickState(next);
+ await bandClickSessionRef().set(payload);
+}
+async function bandClickSetlistChanged(){
+ const state=activeBandClickState();if(!bandClickCanControl()||state.playing)return renderBandClickControls();
+ const node=document.getElementById('bcSetlist'),set=setlists.find(s=>s.id===node.value);let songId=state.songId,songTitle=state.songTitle,songArtist=state.songArtist,bpm=state.bpm;
+ const available=bandClickEligibleSongs(node.value);if(songId&&!available.some(s=>s.id===songId)){songId='';songTitle='Tempo ręczne';songArtist='Pozorantsi'}
+ try{await applyActiveBandClickPatch({setlistId:node.value,setlistName:set?.name||'',songId,songTitle,songArtist,bpm,revision:state.revision+1})}catch(e){bandClickWriteError(e)}
+}
+async function bandClickSongChanged(){
+ const state=activeBandClickState();if(!bandClickCanControl()||state.playing)return renderBandClickControls();
+ const id=document.getElementById('bcSong').value,song=songs.find(s=>s.id===id);if(song&&!Number(song.bpm)){alert('Ten utwór nie ma wpisanego BPM. Uzupełnij BPM w bazie albo użyj tempa ręcznego.');document.getElementById('bcSong').value=state.songId||'';return}
+ try{await applyActiveBandClickPatch({songId:id,songTitle:song?.title||'Tempo ręczne',songArtist:song?.artist||'Pozorantsi',bpm:song?clampBandClickBpm(song.bpm):state.bpm,revision:state.revision+1})}catch(e){bandClickWriteError(e)}
+}
+async function bandClickBpmChanged(){
+ const state=activeBandClickState();if(!bandClickCanControl()||state.playing)return renderBandClickControls();const bpm=clampBandClickBpm(document.getElementById('bcBpm').value);
+ try{await applyActiveBandClickPatch({bpm,revision:state.revision+1})}catch(e){bandClickWriteError(e)}
+}
+function bandClickStepBpm(delta){const state=activeBandClickState();if(!bandClickCanControl()||state.playing)return;document.getElementById('bcBpm').value=clampBandClickBpm(state.bpm+Number(delta||0));bandClickBpmChanged()}
+async function bandClickSetCountIn(bars){const state=activeBandClickState();if(!bandClickCanControl()||state.playing)return;try{await applyActiveBandClickPatch({countInBars:bars,revision:state.revision+1})}catch(e){bandClickWriteError(e)}}
+function bandClickWriteError(error){console.error('Band Click write',error);if(bandClickIsSolo())alert('Nie udało się uruchomić metronomu SOLO. Zamknij widok CLICK i spróbuj ponownie.');else{alert('Nie udało się zapisać Band Click. Sprawdź połączenie i upewnij się, że nowe reguły Firestore zostały wdrożone.');listenBandClick()}}
+async function bandClickToggleStart(){
+ if(!bandClickCanControl()||bandClickStarting)return;
+ bandClickStarting=true;renderBandClickControls();
+ try{
+   await unlockBandClickAudio();
+   const state=activeBandClickState();
+   if(state.playing)await applyActiveBandClickPatch({playing:false,startAtMs:0,revision:state.revision+1});
+   else{
+     if(!bandClickIsSolo()&&navigator.onLine&&!bandClickClockReady)await Promise.race([calibrateBandClickClock(),new Promise(resolve=>setTimeout(resolve,900))]);
+     const bpm=clampBandClickBpm(document.getElementById('bcBpm').value),startAtMs=bandClickIsSolo()?Date.now()+650:bandClickServerNow()+2400;
+     await applyActiveBandClickPatch({playing:true,bpm,startAtMs,revision:state.revision+1});
+   }
+ }catch(e){bandClickWriteError(e)}finally{bandClickStarting=false;renderBandClickControls()}
+}
+async function unlockBandClickAudio(){
+ try{
+   if(!bandClickAudioContext){const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)throw new Error('Brak Web Audio API');try{bandClickAudioContext=new Ctx({latencyHint:'interactive'})}catch{bandClickAudioContext=new Ctx()}}
+   if(bandClickAudioContext.state==='suspended')await bandClickAudioContext.resume();
+   const osc=bandClickAudioContext.createOscillator(),gain=bandClickAudioContext.createGain();gain.gain.value=.00001;osc.connect(gain).connect(bandClickAudioContext.destination);osc.start();osc.stop(bandClickAudioContext.currentTime+.012);
+   bandClickAudioUnlocked=true;
+   const btn=document.getElementById('bcAudioBtn');if(btn){btn.textContent='DŹWIĘK AKTYWNY';btn.classList.add('ready')}
+   if(activeBandClickState().playing)beginBandClickScheduler();return true
+ }catch(error){console.error('Band Click audio',error);alert('Telefon nie pozwolił uruchomić dźwięku. Dotknij ponownie przycisku „Włącz dźwięk”.');return false}
+}
+function bandClickVolumeChanged(value,store=true){
+ const v=Math.max(0,Math.min(100,Math.round(Number(value)||0))),slider=document.getElementById('bcVolume'),label=document.getElementById('bcVolumeLabel');if(slider)slider.value=v;if(label)label.textContent=v+'%';if(store)localStorage.setItem('pozorantsi_bc_volume',String(v))
+}
+function bandClickOffsetChanged(value,store=true){
+ const v=clampBandClickOffset(value),slider=document.getElementById('bcOffset'),num=document.getElementById('bcOffsetNumber');if(slider)slider.value=v;if(num)num.value=v;if(store)localStorage.setItem('pozorantsi_bc_offset',String(v));if(activeBandClickState().playing&&bandClickAudioUnlocked)beginBandClickScheduler()
+}
+function bandClickOffsetNumberChanged(value){bandClickOffsetChanged(value,true)}
+function bandClickLocalVolume(){return Math.max(0,Math.min(1,Number(localStorage.getItem('pozorantsi_bc_volume')||70)/100))}
+function bandClickAudioOffset(){return clampBandClickOffset(localStorage.getItem('pozorantsi_bc_offset')||0)}
+function scheduleBandClickSound(when,downbeat){
+ if(!bandClickAudioContext||bandClickLocalVolume()<=0||when<bandClickAudioContext.currentTime-.02)return;
+ const ctx=bandClickAudioContext,osc=ctx.createOscillator(),gain=ctx.createGain(),volume=bandClickLocalVolume();osc.type='square';osc.frequency.setValueAtTime(downbeat?1560:980,when);osc.frequency.exponentialRampToValueAtTime(downbeat?920:690,when+.045);gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume*(downbeat?.42:.26)),when+.002);gain.gain.exponentialRampToValueAtTime(.0001,when+(downbeat?.065:.045));osc.connect(gain).connect(ctx.destination);osc.start(when);osc.stop(when+.075)
+}
+function beginBandClickScheduler(){
+ stopBandClickScheduler();const state=activeBandClickState();if(!state.playing||!state.startAtMs||!bandClickAudioUnlocked||!bandClickAudioContext)return;
+ const beatMs=60000/state.bpm,nowAtStart=bandClickNow(),advance=bandClickAudioOffset();bandClickNextBeatIndex=Math.max(0,Math.ceil((nowAtStart+advance+12-state.startAtMs)/beatMs));
+ const run=()=>{
+   const current=activeBandClickState();if(!current.playing||!bandClickAudioContext)return;
+   if(current.bpm!==state.bpm||current.startAtMs!==state.startAtMs)return beginBandClickScheduler();
+   const now=bandClickNow(),offset=bandClickAudioOffset(),lookAhead=Math.max(900,offset+350);
+   while(state.startAtMs+bandClickNextBeatIndex*beatMs-offset<=now+lookAhead){
+     const beatAt=state.startAtMs+bandClickNextBeatIndex*beatMs,target=bandClickAudioContext.currentTime+(beatAt-now-offset)/1000;
+     if(target>=bandClickAudioContext.currentTime+.006)scheduleBandClickSound(target,bandClickNextBeatIndex%4===0);
+     bandClickNextBeatIndex++
+   }
+ };
+ run();bandClickSchedulerTimer=setInterval(run,25)
+}
+function stopBandClickScheduler(){if(bandClickSchedulerTimer){clearInterval(bandClickSchedulerTimer);bandClickSchedulerTimer=null}}
+function startBandClickVisuals(){
+ if(bandClickVisualFrame)cancelAnimationFrame(bandClickVisualFrame);
+ const draw=()=>{
+   if(!document.body.classList.contains('band-click-mode')){bandClickVisualFrame=null;return}
+   drawBandClickVisual();bandClickVisualFrame=requestAnimationFrame(draw)
+ };
+ draw()
+}
+function drawBandClickVisual(){
+ const status=document.getElementById('bcNowStatus'),arm=document.getElementById('bcPendulumArm');if(!status||!arm)return;
+ const state=activeBandClickState();if(!state.playing||!state.startAtMs){status.textContent=bandClickIsSolo()?'SOLO • GOTOWY':'GOTOWY';arm.style.transform='translateX(-50%) rotate(-42deg)';setBandClickBeatUi(-1);return}
+ const beatMs=60000/state.bpm,elapsed=(bandClickNow()-state.startAtMs)/beatMs;
+ if(elapsed<0){status.textContent='START ZA '+Math.max(0,(-elapsed*beatMs/1000)).toFixed(1)+' s';arm.style.transform='translateX(-50%) rotate(-42deg)';setBandClickBeatUi(-1);return}
+ const beatIndex=Math.floor(elapsed),phase=elapsed-beatIndex,angle=-42*Math.cos(Math.PI*(beatIndex+phase));arm.style.transform=`translateX(-50%) rotate(${angle.toFixed(2)}deg)`;
+ const countBeats=state.countInBars*4;if(beatIndex<countBeats)status.textContent=`COUNT-IN • ${Math.floor(beatIndex/4)+1}/${state.countInBars}`;else status.textContent=bandClickIsSolo()?'GRA • SOLO':(navigator.onLine?'GRA • ZSYNCHRONIZOWANO':'GRA LOKALNIE • OFFLINE');
+ setBandClickBeatUi(beatIndex)
+}
+function setBandClickBeatUi(beatIndex){
+ const beat=beatIndex<0?-1:beatIndex%4;for(let i=0;i<4;i++){const n=document.getElementById('bcBeat'+(i+1));if(n){n.classList.toggle('active',i===beat);n.classList.toggle('downbeat',i===0&&i===beat)}}
+ if(beatIndex>=0&&beatIndex!==bandClickLastBeat&&beat===0){const flash=document.getElementById('bcFlash');if(flash){flash.classList.remove('on');void flash.offsetWidth;flash.classList.add('on')}}bandClickLastBeat=beatIndex
+}
+async function openBandClick(){
+ if(!canUseBandClick())return;
+ closeDrumView();const view=document.getElementById('bandClickView');document.body.classList.add('band-click-mode');view.classList.add('open');view.setAttribute('aria-hidden','false');
+ renderBandClickControls();updateBandClickUi();updateBandClickNetwork();startBandClickVisuals();await unlockBandClickAudio();if(!bandClickIsSolo()&&navigator.onLine)calibrateBandClickClock()
+}
+function closeBandClick(){const view=document.getElementById('bandClickView');document.body.classList.remove('band-click-mode');if(view){view.classList.remove('open');view.setAttribute('aria-hidden','true')}if(bandClickVisualFrame){cancelAnimationFrame(bandClickVisualFrame);bandClickVisualFrame=null}}
+function stopBandClickModule(reset=false){
+ if(bandClickUnsubscribe){bandClickUnsubscribe();bandClickUnsubscribe=null}stopBandClickScheduler();closeBandClick();if(reset){bandClickState={...BAND_CLICK_DEFAULT_STATE};bandClickSoloState={...BAND_CLICK_DEFAULT_STATE};bandClickAudioUnlocked=false;if(bandClickAudioContext){bandClickAudioContext.close().catch(()=>{});bandClickAudioContext=null}}
+}
+window.addEventListener('online',()=>{if(canUseBandClick()){updateBandClickNetwork();if(!bandClickIsSolo())calibrateBandClickClock()}});
+window.addEventListener('offline',updateBandClickNetwork);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&activeBandClickState().playing){if(bandClickAudioContext?.state==='suspended')bandClickAudioContext.resume().catch(()=>{});if(bandClickAudioUnlocked)beginBandClickScheduler()}});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(document.body.classList.contains('band-click-mode'))closeBandClick();else if(document.body.classList.contains('drum-mode'))closeDrumView()});
 function songRowAction(id){
  if(window.matchMedia&&window.matchMedia('(max-width:900px)').matches)playSong(id);
  else selectSong(id);
