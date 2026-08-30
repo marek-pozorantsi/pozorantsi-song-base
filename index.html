@@ -3,9 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Pozorantsi Song Base — Band Click v4 iPHONE AUDIO</title>
+<title>Pozorantsi Song Base — Band Click v6 CONTINUOUS iPHONE AUDIO</title>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="preload" href="band-click-track-60.m4a" as="audio" type="audio/mp4">
+<link rel="preload" href="band-click-track-150.m4a" as="audio" type="audio/mp4">
 <meta name="theme-color" content="#07111f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pozorantsi">
@@ -423,16 +425,17 @@ body.band-click-mode{overflow:hidden}
 .bc-segment{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.bc-segment button{height:43px;border:1px solid rgba(255,255,255,.16);background:#0b1421;color:#aeb8c7;border-radius:10px;font-size:13px;font-weight:900;cursor:pointer}.bc-segment button.active{border-color:#ff9c48;background:rgba(255,142,57,.22);color:#ffe2c5}.bc-segment button:disabled{opacity:.5;cursor:default}
 .bc-actions{display:grid;grid-template-columns:1fr 1.35fr;gap:9px;margin-top:16px}.bc-audio-btn,.bc-start-btn{min-height:54px;border-radius:12px;font-size:13px;font-weight:950;letter-spacing:.8px;cursor:pointer}.bc-audio-btn{border:1px solid rgba(76,191,255,.45);background:rgba(36,137,191,.14);color:#8cddff}.bc-audio-btn.ready{border-color:rgba(59,212,142,.45);background:rgba(35,181,117,.13);color:#7cf2bd}.bc-start-btn{border:1px solid #ff9643;background:linear-gradient(135deg,#ff842a,#e54c1a);color:white;box-shadow:0 9px 28px rgba(229,76,26,.2)}.bc-start-btn.stop{border-color:#ff6c76;background:linear-gradient(135deg,#e63b49,#a51624)}.bc-start-btn:disabled{filter:grayscale(.6);opacity:.5;cursor:default;box-shadow:none}
 .bc-audio-status{margin-top:8px;color:#8593a7;font-size:10px;font-weight:750;line-height:1.45}.bc-audio-status.ok{color:#73e9b5}.bc-audio-status.error{color:#ffbd78}
+.bc-iphone-audio{display:none;margin-top:12px;border:1px solid rgba(76,191,255,.42);background:rgba(24,112,158,.12);border-radius:12px;padding:11px}.bc-iphone-audio.show{display:block}.bc-iphone-audio strong{display:block;color:#91dcff;font-size:11px;letter-spacing:.7px}.bc-iphone-audio span{display:block;margin:5px 0 9px;color:#c2d3e3;font-size:10px;line-height:1.45}.bc-iphone-audio audio{display:block!important;width:100%;height:42px;opacity:1!important;visibility:visible!important}
 .bc-master-note{margin-top:13px;border:1px solid rgba(255,255,255,.1);background:#050b14;border-radius:10px;padding:10px;color:#8794a7;font-size:11px;line-height:1.45}.bc-master-note strong{color:#ffc584}
-.bc-stage{position:relative;overflow:hidden;min-height:510px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.bc-stage::before{content:"";position:absolute;inset:-30%;background:radial-gradient(circle,rgba(255,126,31,.1),transparent 55%);pointer-events:none}.bc-flash{position:absolute;inset:0;background:radial-gradient(circle,rgba(255,244,197,.42),rgba(255,132,32,.12) 35%,transparent 68%);opacity:0;pointer-events:none}.bc-flash.on{animation:bcFlash .18s ease-out}@keyframes bcFlash{0%{opacity:1}100%{opacity:0}}
+.bc-stage{position:relative;overflow:hidden;min-height:510px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.bc-stage::before{content:"";position:absolute;inset:-30%;background:radial-gradient(circle,rgba(255,126,31,.1),transparent 55%);pointer-events:none}.bc-flash{position:fixed;inset:0;z-index:50;background:radial-gradient(circle at 50% 48%,rgba(255,255,248,.98) 0,rgba(255,226,154,.9) 30%,rgba(255,126,28,.68) 68%,rgba(255,92,12,.48) 100%);box-shadow:inset 0 0 0 9px rgba(255,149,55,.95),inset 0 0 90px 28px rgba(255,204,110,.85);opacity:0;pointer-events:none}.bc-flash.on{animation:bcFlash .34s cubic-bezier(.12,.72,.25,1)}@keyframes bcFlash{0%{opacity:0}7%{opacity:.94}34%{opacity:.76}100%{opacity:0}}
 .bc-now-status{position:relative;z-index:1;color:#ffb36c;font-size:12px;font-weight:950;letter-spacing:1.6px}.bc-song-title{position:relative;z-index:1;width:100%;margin:9px 0 2px;font-size:clamp(24px,4vw,42px);line-height:1.05;font-weight:950;overflow-wrap:anywhere}.bc-song-artist{position:relative;z-index:1;color:#4cbfff;font-size:17px;font-weight:850;min-height:23px}.bc-bpm-display{position:relative;z-index:1;margin:20px 0 5px;font-size:clamp(58px,9vw,90px);line-height:.86;font-weight:950;font-variant-numeric:tabular-nums}.bc-bpm-display span{display:block;margin-top:12px;color:#7f8b9d;font-size:11px;letter-spacing:2px}
 .bc-pendulum{position:relative;z-index:1;width:min(360px,78vw);height:120px;margin:12px auto 5px}.bc-pendulum-base{position:absolute;left:50%;bottom:9px;width:52px;height:9px;transform:translateX(-50%);background:#526075;border-radius:99px}.bc-pendulum-arm{position:absolute;left:50%;bottom:15px;width:5px;height:91px;transform-origin:50% 100%;transform:translateX(-50%) rotate(-42deg);background:linear-gradient(#ffb466,#d8e2ef);border-radius:99px;will-change:transform}.bc-pendulum-weight{position:absolute;left:50%;top:-7px;width:25px;height:25px;transform:translateX(-50%);border-radius:50%;background:#ff9a45;box-shadow:0 0 24px rgba(255,145,57,.45)}
-.bc-beats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(var(--bc-beats,4),minmax(0,1fr));gap:clamp(4px,1.2vw,9px);width:min(600px,100%);margin-top:9px}.bc-beat{height:66px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.16);background:#09111d;border-radius:12px;color:#758195;font-size:23px;font-weight:950}.bc-beat.active{border-color:#56c9ff;background:rgba(51,164,219,.24);color:#eaf9ff;transform:translateY(-2px)}.bc-beat.active.downbeat{border-color:#ff9b48;background:rgba(255,131,33,.34);color:#fff4e7;box-shadow:0 0 28px rgba(255,130,32,.23)}
-.bc-local{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr auto;gap:18px;align-items:end}.bc-range-wrap label{display:flex;justify-content:space-between;gap:10px;margin-bottom:9px;color:#a8b3c2;font-size:11px;font-weight:900}.bc-range-wrap input[type=range]{width:100%;accent-color:#ff9342}.bc-offset-input{width:88px!important;height:38px!important;display:inline-block!important;text-align:right}.bc-network{align-self:center;justify-self:end;text-align:right;color:#73e9b5;font-size:11px;font-weight:900;line-height:1.5}.bc-network.offline{color:#ffc36e}.bc-help{grid-column:1 / -1;color:#748196;font-size:10px;line-height:1.5;border-top:1px solid rgba(255,255,255,.08);padding-top:11px}
+.bc-beats{position:relative;z-index:1;display:grid;grid-template-columns:repeat(var(--bc-beats,4),minmax(0,1fr));gap:clamp(4px,1.2vw,9px);width:min(600px,100%);margin-top:9px}.bc-beat{height:66px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.16);background:#09111d;border-radius:12px;color:#758195;font-size:23px;font-weight:950}.bc-beat.active{border-color:#56c9ff;background:rgba(51,164,219,.24);color:#eaf9ff;transform:translateY(-2px)}.bc-beat.active.downbeat{border-color:#fff3d9;background:#ff821f;color:#fff;box-shadow:0 0 0 5px rgba(255,157,69,.32),0 0 58px 22px rgba(255,119,22,.72);animation:bcBeatOne .34s ease-out}@keyframes bcBeatOne{0%{transform:translateY(-2px) scale(1)}24%{transform:translateY(-5px) scale(1.16)}100%{transform:translateY(-2px) scale(1.04)}}
+.bc-local{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr auto;gap:18px;align-items:end}.bc-range-wrap label{display:flex;justify-content:space-between;gap:10px;margin-bottom:9px;color:#a8b3c2;font-size:11px;font-weight:900}.bc-range-wrap input[type=range]{width:100%;accent-color:#ff9342}.bc-offset-input{width:88px!important;height:38px!important;display:inline-block!important;text-align:right}.bc-device-status{align-self:center;justify-self:end;text-align:right}.bc-network{color:#73e9b5;font-size:11px;font-weight:900;line-height:1.5}.bc-network.offline{color:#ffc36e}.bc-wake{margin-top:4px;color:#8794a7;font-size:10px;font-weight:900;line-height:1.4}.bc-wake.on{color:#73e9b5}.bc-wake.error{color:#ffc36e}.bc-help{grid-column:1 / -1;color:#748196;font-size:10px;line-height:1.5;border-top:1px solid rgba(255,255,255,.08);padding-top:11px}
 @media(max-width:900px){
   .band-click-launch{position:absolute;right:72px;top:12px;z-index:45;min-height:36px;padding:0 10px}
   .bc-header{grid-template-columns:auto 1fr auto;padding-top:max(58px,calc(env(safe-area-inset-top,0px) + 10px));gap:8px}.bc-back{min-height:43px;padding:0 11px;font-size:12px}.bc-brand strong{font-size:17px}.bc-brand span{font-size:9px}.bc-role{padding:7px 9px;font-size:9px}
-  .bc-shell{grid-template-columns:1fr;padding:12px 10px max(26px,env(safe-area-inset-bottom));gap:12px}.bc-card{padding:14px;border-radius:15px}.bc-stage{min-height:440px}.bc-local{grid-column:auto;grid-template-columns:1fr}.bc-network{justify-self:start;text-align:left}.bc-actions{position:sticky;bottom:max(8px,env(safe-area-inset-bottom));z-index:4}.bc-pendulum{height:105px}.bc-pendulum-arm{height:78px}.bc-beat{height:56px;font-size:18px;border-radius:9px}
+  .bc-shell{grid-template-columns:1fr;padding:12px 10px max(26px,env(safe-area-inset-bottom));gap:12px}.bc-card{padding:14px;border-radius:15px}.bc-stage{min-height:440px}.bc-local{grid-column:auto;grid-template-columns:1fr}.bc-device-status{justify-self:start;text-align:left}.bc-actions{position:sticky;bottom:max(8px,env(safe-area-inset-bottom));z-index:4}.bc-pendulum{height:105px}.bc-pendulum-arm{height:78px}.bc-beat{height:56px;font-size:18px;border-radius:9px}
 }
 
 </style>
@@ -457,6 +460,7 @@ body.band-click-mode{overflow:hidden}
   <div id="drumList" class="drum-list"></div>
 </section>
 <section id="bandClickView" class="band-click-view" aria-hidden="true">
+  <div id="bcFlash" class="bc-flash" aria-hidden="true"></div>
   <div class="bc-header">
     <button type="button" class="bc-back" onclick="closeBandClick()">← WRÓĆ</button>
     <div class="bc-brand"><strong>BAND CLICK</strong><span id="bcBrandSub">METRONOM SOLO • LOKALNY DŹWIĘK</span></div>
@@ -508,11 +512,15 @@ body.band-click-mode{overflow:hidden}
         <button id="bcStartBtn" class="bc-start-btn" type="button" onclick="bandClickToggleStart()">START</button>
       </div>
       <div id="bcAudioStatus" class="bc-audio-status">Na telefonie najpierw dotknij „TEST DŹWIĘKU”. Powinien być słyszalny pojedynczy klik.</div>
+      <div id="bcIphoneAudioPanel" class="bc-iphone-audio">
+        <strong>iPHONE — CIĄGŁY TOR AUDIO</strong>
+        <span>TEST uruchamia jeden ciągły podkład metronomu. Podczas START plik gra bez zatrzymywania i ponownego uruchamiania na każdym uderzeniu.</span>
+        <audio id="bcIphoneAudio" controls preload="auto" playsinline webkit-playsinline src="./band-click-track-60.m4a">Ta przeglądarka nie obsługuje pliku M4A.</audio>
+      </div>
       <div id="bcModeNote" class="bc-master-note"><strong>Tryb SOLO.</strong> Sam wybierasz utwór lub BPM i uruchamiasz metronom. Paweł nie jest potrzebny; klik działa lokalnie na tym telefonie.</div>
     </div>
 
     <div class="bc-card bc-stage">
-      <div id="bcFlash" class="bc-flash"></div>
       <div id="bcNowStatus" class="bc-now-status">GOTOWY</div>
       <div id="bcSongTitle" class="bc-song-title">Tempo ręczne</div>
       <div id="bcSongArtist" class="bc-song-artist">Pozorantsi</div>
@@ -535,7 +543,7 @@ body.band-click-mode{overflow:hidden}
         <label><span>MÓJ AUDIO OFFSET</span><span><input id="bcOffsetNumber" class="bc-offset-input" type="number" min="-250" max="500" step="1" value="0" onchange="bandClickOffsetNumberChanged(this.value)"> ms</span></label>
         <input id="bcOffset" type="range" min="-250" max="500" step="1" value="0" oninput="bandClickOffsetChanged(this.value)">
       </div>
-      <div id="bcNetwork" class="bc-network">ŁĄCZENIE…</div>
+      <div class="bc-device-status"><div id="bcNetwork" class="bc-network">ŁĄCZENIE…</div><div id="bcWakeStatus" class="bc-wake">EKRAN: AUTOMATYCZNIE</div></div>
       <div class="bc-help">Dodatni Audio Offset odtwarza klik wcześniej i kompensuje opóźnienie słuchawek Bluetooth. Po utracie internetu rozpoczęty metronom nadal pracuje lokalnie na ostatnim zsynchronizowanym tempie.</div>
     </div>
   </div>
@@ -580,7 +588,9 @@ const BAND_CLICK_MASTER_NAME='Paweł';
 const BAND_CLICK_METERS={2:'2/4',3:'3/4',4:'4/4',5:'5/4',6:'6/8',7:'7/8'};
 const BAND_CLICK_DEFAULT_STATE={playing:false,bpm:120,beatsPerBar:4,countInBars:1,setlistId:'',setlistName:'',songId:'',songTitle:'Tempo ręczne',songArtist:'Pozorantsi',startAtMs:0,revision:0,updatedBy:'',updatedByUid:''};
 let bandClickMode=localStorage.getItem('pozorantsi_bc_mode')==='band'?'band':'solo',bandClickState={...BAND_CLICK_DEFAULT_STATE},bandClickSoloState={...BAND_CLICK_DEFAULT_STATE},bandClickUnsubscribe=null,bandClickAudioContext=null,bandClickAudioUnlocked=false,bandClickSchedulerTimer=null,bandClickVisualFrame=null,bandClickNextBeatIndex=0,bandClickClockOffsetMs=Number(localStorage.getItem('pozorantsi_bc_clock_offset')||0),bandClickClockReady=false,bandClickLastBeat=-1,bandClickLastSnapshotAt=0,bandClickStarting=false;
-let bandClickHtmlAudio=null,bandClickHtmlAudioUrl='',bandClickHtmlAudioReady=false,bandClickHtmlAudioVolumeStamp=-1,bandClickHtmlClipStopTimer=null,bandClickHtmlRebuildTimer=null,bandClickHtmlTimers=new Set();
+const BAND_CLICK_IPHONE_TRACK_ORIGIN=6;
+let bandClickHtmlAudio=null,bandClickHtmlAudioUrl='./band-click-track-60.m4a',bandClickHtmlAudioReady=false,bandClickHtmlAudioVolumeStamp=-1,bandClickHtmlClipStopTimer=null,bandClickHtmlRebuildTimer=null,bandClickHtmlTimers=new Set(),bandClickIphoneStartToken=0;
+let bandClickWakeLock=null,bandClickWakeLockPending=false;
 const persistenceReady=Promise.resolve();
 window.onYouTubeIframeAPIReady=()=>{setTimeout(prewarmPlayer,300)};
 function init(){
@@ -1008,7 +1018,7 @@ function updateBandClickUi(){
  const launch=document.getElementById('bandClickLaunchBtn');if(launch)launch.classList.toggle('live',state.playing);
  const volume=Math.max(0,Math.min(100,Math.round(Number(localStorage.getItem('pozorantsi_bc_volume')||70)||0)));bandClickVolumeChanged(volume,false);
  const offset=clampBandClickOffset(localStorage.getItem('pozorantsi_bc_offset')||0);bandClickOffsetChanged(offset,false);
- renderBandClickControls();
+ renderBandClickControls();if(bandClickUsesHtmlAudio()&&!state.playing)try{prepareBandClickHtmlAudio(false,state.bpm)}catch{}syncBandClickWakeLock();
 }
 function applyActiveBandClickPatch(patch){
  if(!bandClickIsSolo())return writeBandClickState(patch);
@@ -1045,10 +1055,10 @@ async function bandClickToggleStart(){
  if(!bandClickCanControl()||bandClickStarting)return;
  bandClickStarting=true;renderBandClickControls();
  try{
-   if(!await unlockBandClickAudio(true))return;
    const state=activeBandClickState();
    if(state.playing)await applyActiveBandClickPatch({playing:false,startAtMs:0,revision:state.revision+1});
    else{
+     const audioReady=await unlockBandClickAudio(false);if(!audioReady)setBandClickAudioStatus('START działa wizualnie. Aby dodać dźwięk, użyj TEST DŹWIĘKU; błysk i blokada ekranu działają niezależnie.','error');
      if(!bandClickIsSolo()&&navigator.onLine&&!bandClickClockReady)await Promise.race([calibrateBandClickClock(),new Promise(resolve=>setTimeout(resolve,900))]);
      const bpm=clampBandClickBpm(document.getElementById('bcBpm').value),startAtMs=bandClickIsSolo()?Date.now()+650:bandClickServerNow()+2400;
      await applyActiveBandClickPatch({playing:true,bpm,startAtMs,revision:state.revision+1});
@@ -1059,46 +1069,75 @@ function bandClickUsesHtmlAudio(){
  const ua=String(navigator.userAgent||''),platform=String(navigator.platform||'');return /iPhone|iPad|iPod/i.test(ua)||(platform==='MacIntel'&&Number(navigator.maxTouchPoints||0)>1)
 }
 function writeBandClickWavText(view,offset,text){for(let i=0;i<text.length;i++)view.setUint8(offset+i,text.charCodeAt(i))}
-function bandClickCreateHtmlClickUrl(){
- const sampleRate=24000,duration=.34,samples=Math.floor(sampleRate*duration),dataBytes=samples*2,buffer=new ArrayBuffer(44+dataBytes),view=new DataView(buffer),volume=bandClickLocalVolume();
- writeBandClickWavText(view,0,'RIFF');view.setUint32(4,36+dataBytes,true);writeBandClickWavText(view,8,'WAVE');writeBandClickWavText(view,12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,1,true);view.setUint32(24,sampleRate,true);view.setUint32(28,sampleRate*2,true);view.setUint16(32,2,true);view.setUint16(34,16,true);writeBandClickWavText(view,36,'data');view.setUint32(40,dataBytes,true);
- const segment=(time,start,length,frequency,level)=>{if(time<start||time>=start+length)return 0;const t=time-start,attack=Math.min(1,t/.0025),envelope=attack*Math.exp(-t/(length*.24)),wave=.76*Math.sin(2*Math.PI*frequency*t)+.24*Math.sin(2*Math.PI*frequency*1.83*t);return level*volume*envelope*wave};
- for(let i=0;i<samples;i++){const time=i/sampleRate,value=Math.max(-1,Math.min(1,segment(time,0,.105,1180,.92)+segment(time,.18,.082,760,.62)));view.setInt16(44+i*2,Math.round(value*32767),true)}
- return URL.createObjectURL(new Blob([buffer],{type:'audio/wav'}))
+function bandClickIphoneTrackConfig(bpm=activeBandClickState().bpm){
+ const value=clampBandClickBpm(bpm),base=value<=120?60:150;return{bpm:value,base,rate:value/base,src:base===60?'./band-click-track-60.m4a':'./band-click-track-150.m4a'}
 }
-function prepareBandClickHtmlAudio(force=false){
- const stamp=Math.round(bandClickLocalVolume()*100);if(bandClickHtmlAudio&&!force&&bandClickHtmlAudioUrl&&stamp===bandClickHtmlAudioVolumeStamp)return bandClickHtmlAudio;
- if(!bandClickHtmlAudio){bandClickHtmlAudio=document.createElement('audio');bandClickHtmlAudio.id='bcIphoneAudio';bandClickHtmlAudio.preload='auto';bandClickHtmlAudio.playsInline=true;bandClickHtmlAudio.setAttribute('playsinline','');bandClickHtmlAudio.setAttribute('webkit-playsinline','');bandClickHtmlAudio.setAttribute('aria-hidden','true');bandClickHtmlAudio.style.display='none';if(document.body.appendChild)document.body.appendChild(bandClickHtmlAudio)}
- try{bandClickHtmlAudio.pause()}catch{}
- if(bandClickHtmlAudioUrl)try{URL.revokeObjectURL(bandClickHtmlAudioUrl)}catch{}
- bandClickHtmlAudioUrl=bandClickCreateHtmlClickUrl();bandClickHtmlAudioVolumeStamp=stamp;bandClickHtmlAudio.src=bandClickHtmlAudioUrl;bandClickHtmlAudio.volume=1;if(typeof bandClickHtmlAudio.load==='function')bandClickHtmlAudio.load();return bandClickHtmlAudio
+function bandClickCreateHtmlClickUrl(bpm=activeBandClickState().bpm){return bandClickIphoneTrackConfig(bpm).src}
+function bandClickPositionHtmlAudioForTest(audio,bpm=activeBandClickState().bpm){
+ const config=bandClickIphoneTrackConfig(bpm);try{audio.preservesPitch=false;audio.webkitPreservesPitch=false;audio.playbackRate=config.rate;audio.currentTime=Math.max(0,BAND_CLICK_IPHONE_TRACK_ORIGIN-.18*config.rate)}catch{}return config
+}
+function bandClickMarkHtmlAudioReady(){
+ const wasReady=bandClickHtmlAudioReady;bandClickHtmlAudioReady=true;bandClickAudioUnlocked=true;const btn=document.getElementById('bcAudioBtn');if(btn){btn.classList.add('ready');btn.textContent='KLIK iPHONE ✓'}setBandClickAudioStatus('Ciągły tor iPHONE AUDIO jest gotowy. Podczas START będzie uruchomiony tylko raz.','ok');if(!wasReady&&activeBandClickState().playing)beginBandClickScheduler();else if(!activeBandClickState().playing)stopBandClickHtmlClipAfter(1500)
+}
+function prepareBandClickHtmlAudio(force=false,bpm=activeBandClickState().bpm){
+ const panel=document.getElementById('bcIphoneAudioPanel');if(panel)panel.classList.toggle('show',bandClickUsesHtmlAudio());
+ const audio=document.getElementById('bcIphoneAudio');if(!audio)throw new Error('Brak ciągłego odtwarzacza iPHONE AUDIO');bandClickHtmlAudio=audio;const config=bandClickIphoneTrackConfig(bpm),source=config.src;
+ if(audio.dataset.bandClickTrack!==source){try{audio.pause()}catch{}audio.dataset.bandClickTrack=source;audio.src=source;bandClickHtmlAudioUrl=source;if(typeof audio.load==='function')audio.load()}else bandClickHtmlAudioUrl=source;
+ const stamp=Math.round(bandClickLocalVolume()*100);bandClickHtmlAudioVolumeStamp=stamp;try{audio.volume=bandClickLocalVolume()}catch{}
+ if(!audio.dataset.bandClickBound){audio.dataset.bandClickBound='1';audio.addEventListener('playing',bandClickMarkHtmlAudioReady);audio.addEventListener('loadedmetadata',()=>{if(!activeBandClickState().playing&&audio.paused!==false)bandClickPositionHtmlAudioForTest(audio,activeBandClickState().bpm)});audio.addEventListener('ended',()=>{if(activeBandClickState().playing&&bandClickHtmlAudioReady)beginBandClickScheduler()});audio.addEventListener('error',()=>{bandClickHtmlAudioReady=false;bandClickAudioUnlocked=false;setBandClickAudioStatus('Nie udało się wczytać ciągłego pliku M4A. Wgraj oba pliki band-click-track razem z index.html.','error')})}
+ if(!activeBandClickState().playing&&Number(audio.readyState||0)>=1&&audio.paused!==false)bandClickPositionHtmlAudioForTest(audio,bpm);if(force&&Number(audio.readyState||0)===0&&typeof audio.load==='function')audio.load();return audio
 }
 function stopBandClickHtmlClip(){
  if(bandClickHtmlClipStopTimer){clearTimeout(bandClickHtmlClipStopTimer);bandClickHtmlClipStopTimer=null}if(bandClickHtmlAudio)try{bandClickHtmlAudio.pause()}catch{}
 }
 function stopBandClickHtmlClipAfter(delay){
- if(bandClickHtmlClipStopTimer)clearTimeout(bandClickHtmlClipStopTimer);bandClickHtmlClipStopTimer=setTimeout(()=>{bandClickHtmlClipStopTimer=null;if(bandClickHtmlAudio)try{bandClickHtmlAudio.pause()}catch{}},delay)
+ if(bandClickHtmlClipStopTimer)clearTimeout(bandClickHtmlClipStopTimer);bandClickHtmlClipStopTimer=setTimeout(()=>{bandClickHtmlClipStopTimer=null;if(!activeBandClickState().playing&&bandClickHtmlAudio)try{bandClickHtmlAudio.pause()}catch{}},delay)
 }
 async function testBandClickHtmlAudio(){
  if(bandClickLocalVolume()<=0){setBandClickAudioStatus('Głośność metronomu wynosi 0%. Zwiększ suwak „Moja głośność”.','error');alert('Głośność metronomu jest ustawiona na 0%.');return false}
  try{
-   const audio=prepareBandClickHtmlAudio();stopBandClickHtmlClip();try{audio.currentTime=0}catch{};const result=audio.play();if(result&&typeof result.then==='function')await result;bandClickHtmlAudioReady=true;bandClickAudioUnlocked=true;stopBandClickHtmlClipAfter(125);
-   const btn=document.getElementById('bcAudioBtn');if(btn){btn.textContent='KLIK iPHONE ✓';btn.classList.add('ready')}setBandClickAudioStatus('Silnik iPHONE AUDIO działa. Ten sam element dźwiękowy obsłuży metronom.','ok');setTimeout(()=>{const current=document.getElementById('bcAudioBtn');if(current)current.textContent='TEST DŹWIĘKU'},1100);return true
- }catch(error){bandClickHtmlAudioReady=false;bandClickAudioUnlocked=false;console.error('Band Click iPhone audio',error);setBandClickAudioStatus('Safari nie uruchomiło dźwięku iPHONE AUDIO. Dotknij testu ponownie.','error');alert('Safari nie uruchomiło kliku. Dotknij ponownie TEST DŹWIĘKU.');return false}
+   const audio=prepareBandClickHtmlAudio(true),metadataReady=Number(audio.readyState||0)>=1;stopBandClickHtmlClip();if(metadataReady)bandClickPositionHtmlAudioForTest(audio);const result=audio.play();if(result&&typeof result.then==='function')await result;if(!metadataReady){await bandClickWaitForHtmlAudioMetadata(audio);bandClickPositionHtmlAudioForTest(audio)}bandClickMarkHtmlAudioReady();stopBandClickHtmlClipAfter(1500);setTimeout(()=>{const current=document.getElementById('bcAudioBtn');if(current)current.textContent='TEST DŹWIĘKU'},1500);return true
+ }catch(error){bandClickHtmlAudioReady=false;bandClickAudioUnlocked=false;console.error('Band Click iPhone audio',error);setBandClickAudioStatus('iPhone nie uruchomił ciągłego toru. Dotknij ▶ w widocznym odtwarzaczu poniżej.','error');alert('Dotknij trójkąta ▶ w odtwarzaczu „iPHONE — CIĄGŁY TOR AUDIO”.');return false}
+}
+function bandClickWaitForHtmlAudioMetadata(audio){
+ if(Number(audio.readyState||0)>=1)return Promise.resolve();return new Promise((resolve,reject)=>{let done=false;const finish=error=>{if(done)return;done=true;clearTimeout(timer);audio.removeEventListener&&audio.removeEventListener('loadedmetadata',onReady);audio.removeEventListener&&audio.removeEventListener('error',onError);error?reject(error):resolve()},onReady=()=>finish(),onError=()=>finish(new Error('Błąd pliku M4A')),timer=setTimeout(()=>finish(new Error('Przekroczony czas ładowania M4A')),3500);audio.addEventListener('loadedmetadata',onReady,{once:true});audio.addEventListener('error',onError,{once:true})})
+}
+async function beginBandClickIphoneTrack(state=activeBandClickState()){
+ const token=++bandClickIphoneStartToken,config=bandClickIphoneTrackConfig(state.bpm),audio=prepareBandClickHtmlAudio(false,state.bpm);if(bandClickHtmlClipStopTimer){clearTimeout(bandClickHtmlClipStopTimer);bandClickHtmlClipStopTimer=null}
+ try{
+   await bandClickWaitForHtmlAudioMetadata(audio);if(token!==bandClickIphoneStartToken||!activeBandClickState().playing)return;
+   const now=bandClickNow(),elapsed=(now+bandClickAudioOffset()-state.startAtMs)/1000,duration=Number(audio.duration||0),usable=duration-BAND_CLICK_IPHONE_TRACK_ORIGIN-.25;let mediaTime=BAND_CLICK_IPHONE_TRACK_ORIGIN+elapsed*config.rate;if(usable>1&&mediaTime>=duration-.2)mediaTime=BAND_CLICK_IPHONE_TRACK_ORIGIN+((mediaTime-BAND_CLICK_IPHONE_TRACK_ORIGIN)%usable);mediaTime=Math.max(0,mediaTime);
+   try{audio.preservesPitch=false;audio.webkitPreservesPitch=false;audio.playbackRate=config.rate;audio.currentTime=mediaTime}catch{}
+   const result=audio.play();if(result&&typeof result.then==='function')await result;if(token!==bandClickIphoneStartToken||!activeBandClickState().playing){try{audio.pause()}catch{}return}bandClickMarkHtmlAudioReady();setBandClickAudioStatus(`iPHONE AUDIO: ciągły tor ${config.base} BPM × ${config.rate.toFixed(2)} — bez przerw między klikami.`,'ok')
+ }catch(error){if(token!==bandClickIphoneStartToken)return;console.error('Band Click continuous iPhone track',error);setBandClickAudioStatus('Ciągły tor iPhone nie wystartował. Błysk nadal działa; dotknij TEST DŹWIĘKU i uruchom ponownie.','error')}
 }
 function playBandClickHtmlSound(downbeat){
- if(!bandClickHtmlAudioReady||bandClickLocalVolume()<=0)return;const audio=prepareBandClickHtmlAudio();stopBandClickHtmlClip();try{audio.currentTime=downbeat?0:.18}catch{};const result=audio.play();stopBandClickHtmlClipAfter(downbeat?120:98);if(result&&typeof result.catch==='function')result.catch(error=>{if(error&&error.name==='AbortError')return;console.error('Band Click iPhone beat',error);setBandClickAudioStatus('iPHONE AUDIO utracił zgodę. Naciśnij ponownie TEST DŹWIĘKU.','error')})
+ if(activeBandClickState().playing&&bandClickHtmlAudioReady)return beginBandClickIphoneTrack(activeBandClickState())
 }
 function releaseBandClickHtmlAudio(){
- stopBandClickHtmlClip();for(const timer of bandClickHtmlTimers)clearTimeout(timer);bandClickHtmlTimers.clear();if(bandClickHtmlRebuildTimer){clearTimeout(bandClickHtmlRebuildTimer);bandClickHtmlRebuildTimer=null}if(bandClickHtmlAudio){try{bandClickHtmlAudio.pause()}catch{}if(typeof bandClickHtmlAudio.remove==='function')bandClickHtmlAudio.remove();bandClickHtmlAudio=null}if(bandClickHtmlAudioUrl)try{URL.revokeObjectURL(bandClickHtmlAudioUrl)}catch{}bandClickHtmlAudioUrl='';bandClickHtmlAudioReady=false;bandClickHtmlAudioVolumeStamp=-1
+ bandClickIphoneStartToken++;stopBandClickHtmlClip();for(const timer of bandClickHtmlTimers)clearTimeout(timer);bandClickHtmlTimers.clear();if(bandClickHtmlRebuildTimer){clearTimeout(bandClickHtmlRebuildTimer);bandClickHtmlRebuildTimer=null}bandClickHtmlAudio=null;bandClickHtmlAudioUrl='./band-click-track-60.m4a';bandClickHtmlAudioReady=false;bandClickHtmlAudioVolumeStamp=-1;const panel=document.getElementById('bcIphoneAudioPanel');if(panel)panel.classList.remove('show')
 }
 function setBandClickAudioStatus(text,status=''){
  const node=document.getElementById('bcAudioStatus');if(!node)return;node.textContent=text;node.classList.toggle('ok',status==='ok');node.classList.toggle('error',status==='error')
 }
+function setBandClickWakeStatus(text,status=''){
+ const node=document.getElementById('bcWakeStatus');if(!node)return;node.textContent=text;node.classList.toggle('on',status==='on');node.classList.toggle('error',status==='error')
+}
+async function requestBandClickWakeLock(){
+ if(bandClickWakeLock||bandClickWakeLockPending)return true;if(!navigator.wakeLock||typeof navigator.wakeLock.request!=='function'){setBandClickWakeStatus('EKRAN: BRAK WAKE LOCK','error');return false}bandClickWakeLockPending=true;
+ try{const lock=await navigator.wakeLock.request('screen');bandClickWakeLock=lock;setBandClickWakeStatus('EKRAN: NIE WYGASI SIĘ','on');if(lock&&typeof lock.addEventListener==='function')lock.addEventListener('release',()=>{if(bandClickWakeLock===lock)bandClickWakeLock=null;if(activeBandClickState().playing&&document.visibilityState==='visible'){setBandClickWakeStatus('EKRAN: PONOWNE WŁĄCZANIE…','error');setTimeout(syncBandClickWakeLock,250)}else setBandClickWakeStatus('EKRAN: AUTOMATYCZNIE')});return true}catch(error){console.warn('Band Click wake lock',error);setBandClickWakeStatus('EKRAN: SYSTEM ODMÓWIŁ','error');return false}finally{bandClickWakeLockPending=false}
+}
+async function releaseBandClickWakeLock(){
+ const lock=bandClickWakeLock;bandClickWakeLock=null;if(lock&&typeof lock.release==='function')try{await lock.release()}catch{}if(!activeBandClickState().playing)setBandClickWakeStatus('EKRAN: AUTOMATYCZNIE')
+}
+function syncBandClickWakeLock(){
+ const keepAwake=activeBandClickState().playing&&document.visibilityState==='visible';if(keepAwake)requestBandClickWakeLock();else releaseBandClickWakeLock()
+}
 async function unlockBandClickAudio(showError=true){
  if(bandClickUsesHtmlAudio()){
+   try{prepareBandClickHtmlAudio()}catch(error){setBandClickAudioStatus('Brakuje ciągłych plików M4A. Wgraj pełną paczkę v6.','error');if(showError)alert('Brakuje plików band-click-track-60.m4a i band-click-track-150.m4a. Wgraj pełną paczkę v6.');return false}
    if(bandClickHtmlAudioReady){bandClickAudioUnlocked=true;return true}
-   setBandClickAudioStatus('iPhone wykryty: dotknij TEST DŹWIĘKU, aby uruchomić silnik iPHONE AUDIO.','error');if(showError)alert('Na iPhonie najpierw naciśnij TEST DŹWIĘKU. Po usłyszeniu kliku uruchom metronom.');return false
+   setBandClickAudioStatus('iPhone wykryty: dotknij TEST DŹWIĘKU. START wizualny i mocny błysk działają również bez dźwięku.','error');if(showError)alert('Na iPhonie naciśnij TEST DŹWIĘKU. Sam błysk można uruchomić także bez dźwięku.');return false
  }
  try{
    if(!bandClickAudioContext){const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)throw new Error('Brak Web Audio API');try{bandClickAudioContext=new Ctx({latencyHint:'interactive'})}catch{bandClickAudioContext=new Ctx()}}
@@ -1127,10 +1166,10 @@ function resumeBandClickAudioFromGesture(){
  bandClickAudioContext.resume().then(()=>{if(bandClickAudioContext.state==='running'){bandClickAudioUnlocked=true;setBandClickAudioStatus('Dźwięk odblokowany. Uruchom TEST DŹWIĘKU.','ok')}}).catch(()=>{})
 }
 function bandClickVolumeChanged(value,store=true){
- const v=Math.max(0,Math.min(100,Math.round(Number(value)||0))),slider=document.getElementById('bcVolume'),label=document.getElementById('bcVolumeLabel');if(slider)slider.value=v;if(label)label.textContent=v+'%';if(store){localStorage.setItem('pozorantsi_bc_volume',String(v));if(bandClickUsesHtmlAudio()&&bandClickHtmlAudio){if(bandClickHtmlRebuildTimer)clearTimeout(bandClickHtmlRebuildTimer);bandClickHtmlRebuildTimer=setTimeout(()=>{bandClickHtmlRebuildTimer=null;prepareBandClickHtmlAudio(true)},120)}}
+ const v=Math.max(0,Math.min(100,Math.round(Number(value)||0))),slider=document.getElementById('bcVolume'),label=document.getElementById('bcVolumeLabel');if(slider)slider.value=v;if(label)label.textContent=v+'%';if(store)localStorage.setItem('pozorantsi_bc_volume',String(v));if(bandClickUsesHtmlAudio()&&bandClickHtmlAudio){bandClickHtmlAudioVolumeStamp=v;try{bandClickHtmlAudio.volume=v/100}catch{}}
 }
 function bandClickOffsetChanged(value,store=true){
- const v=clampBandClickOffset(value),slider=document.getElementById('bcOffset'),num=document.getElementById('bcOffsetNumber');if(slider)slider.value=v;if(num)num.value=v;if(store)localStorage.setItem('pozorantsi_bc_offset',String(v));if(activeBandClickState().playing&&bandClickAudioUnlocked)beginBandClickScheduler()
+ const v=clampBandClickOffset(value),slider=document.getElementById('bcOffset'),num=document.getElementById('bcOffsetNumber');if(slider)slider.value=v;if(num)num.value=v;if(store){localStorage.setItem('pozorantsi_bc_offset',String(v));if(activeBandClickState().playing&&bandClickAudioUnlocked)beginBandClickScheduler()}
 }
 function bandClickOffsetNumberChanged(value){bandClickOffsetChanged(value,true)}
 function bandClickLocalVolume(){return Math.max(0,Math.min(1,Number(localStorage.getItem('pozorantsi_bc_volume')||70)/100))}
@@ -1140,22 +1179,21 @@ function scheduleBandClickSound(when,downbeat){
  const ctx=bandClickAudioContext,osc=ctx.createOscillator(),gain=ctx.createGain(),volume=bandClickLocalVolume(),duration=downbeat?.085:.06;osc.type='square';osc.frequency.setValueAtTime(downbeat?1320:880,when);osc.frequency.exponentialRampToValueAtTime(downbeat?720:560,when+duration*.7);gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume*(downbeat?.58:.38)),when+.003);gain.gain.exponentialRampToValueAtTime(.0001,when+duration);osc.connect(gain).connect(ctx.destination);osc.start(when);osc.stop(when+duration+.015)
 }
 function beginBandClickScheduler(){
- stopBandClickScheduler();const state=activeBandClickState(),htmlAudio=bandClickUsesHtmlAudio();if(!state.playing||!state.startAtMs||!bandClickAudioUnlocked)return;if(htmlAudio&&!bandClickHtmlAudioReady)return setBandClickAudioStatus('Najpierw uruchom TEST DŹWIĘKU dla iPhone.','error');if(!htmlAudio&&!bandClickAudioContext)return;
+ stopBandClickScheduler();const state=activeBandClickState(),htmlAudio=bandClickUsesHtmlAudio();if(!state.playing||!state.startAtMs||!bandClickAudioUnlocked)return;if(htmlAudio){if(!bandClickHtmlAudioReady)return setBandClickAudioStatus('Błysk działa. Aby dodać dźwięk, uruchom TEST DŹWIĘKU.','error');beginBandClickIphoneTrack(state);return}if(!bandClickAudioContext)return;
  const beatMs=60000/state.bpm,nowAtStart=bandClickNow(),advance=bandClickAudioOffset();bandClickNextBeatIndex=Math.max(0,Math.ceil((nowAtStart+advance+12-state.startAtMs)/beatMs));
  const run=()=>{
-   const current=activeBandClickState();if(!current.playing||(htmlAudio?!bandClickHtmlAudioReady:!bandClickAudioContext))return;
+   const current=activeBandClickState();if(!current.playing||!bandClickAudioContext)return;
    if(current.bpm!==state.bpm||current.beatsPerBar!==state.beatsPerBar||current.startAtMs!==state.startAtMs)return beginBandClickScheduler();
-   const now=bandClickNow(),offset=bandClickAudioOffset(),lookAhead=htmlAudio?Math.max(260,offset+140):Math.max(900,offset+350);
+   const now=bandClickNow(),offset=bandClickAudioOffset(),lookAhead=Math.max(900,offset+350);
    while(state.startAtMs+bandClickNextBeatIndex*beatMs-offset<=now+lookAhead){
      const beatAt=state.startAtMs+bandClickNextBeatIndex*beatMs,downbeat=bandClickNextBeatIndex%state.beatsPerBar===0;
-     if(htmlAudio){const delay=beatAt-now-offset;if(delay>=-24){const timer=setTimeout(()=>{bandClickHtmlTimers.delete(timer);playBandClickHtmlSound(downbeat)},Math.max(0,delay));bandClickHtmlTimers.add(timer)}}
-     else{const target=bandClickAudioContext.currentTime+(beatAt-now-offset)/1000;if(target>=bandClickAudioContext.currentTime+.006)scheduleBandClickSound(target,downbeat)}
+     const target=bandClickAudioContext.currentTime+(beatAt-now-offset)/1000;if(target>=bandClickAudioContext.currentTime+.006)scheduleBandClickSound(target,downbeat)
      bandClickNextBeatIndex++
    }
  };
- run();bandClickSchedulerTimer=setInterval(run,htmlAudio?20:25)
+ run();bandClickSchedulerTimer=setInterval(run,25)
 }
-function stopBandClickScheduler(){if(bandClickSchedulerTimer){clearInterval(bandClickSchedulerTimer);bandClickSchedulerTimer=null}for(const timer of bandClickHtmlTimers)clearTimeout(timer);bandClickHtmlTimers.clear();stopBandClickHtmlClip()}
+function stopBandClickScheduler(){bandClickIphoneStartToken++;if(bandClickSchedulerTimer){clearInterval(bandClickSchedulerTimer);bandClickSchedulerTimer=null}for(const timer of bandClickHtmlTimers)clearTimeout(timer);bandClickHtmlTimers.clear();stopBandClickHtmlClip()}
 function startBandClickVisuals(){
  if(bandClickVisualFrame)cancelAnimationFrame(bandClickVisualFrame);
  const draw=()=>{
@@ -1188,13 +1226,13 @@ async function openBandClick(){
 }
 function closeBandClick(){const view=document.getElementById('bandClickView');document.body.classList.remove('band-click-mode');if(view){view.classList.remove('open');view.setAttribute('aria-hidden','true')}if(bandClickVisualFrame){cancelAnimationFrame(bandClickVisualFrame);bandClickVisualFrame=null}}
 function stopBandClickModule(reset=false){
- if(bandClickUnsubscribe){bandClickUnsubscribe();bandClickUnsubscribe=null}stopBandClickScheduler();closeBandClick();if(reset){bandClickState={...BAND_CLICK_DEFAULT_STATE};bandClickSoloState={...BAND_CLICK_DEFAULT_STATE};bandClickAudioUnlocked=false;releaseBandClickHtmlAudio();if(bandClickAudioContext){bandClickAudioContext.close().catch(()=>{});bandClickAudioContext=null}}
+ if(bandClickUnsubscribe){bandClickUnsubscribe();bandClickUnsubscribe=null}stopBandClickScheduler();closeBandClick();if(reset){bandClickState={...BAND_CLICK_DEFAULT_STATE};bandClickSoloState={...BAND_CLICK_DEFAULT_STATE};bandClickAudioUnlocked=false;releaseBandClickHtmlAudio();releaseBandClickWakeLock();if(bandClickAudioContext){bandClickAudioContext.close().catch(()=>{});bandClickAudioContext=null}}
 }
 window.addEventListener('online',()=>{if(canUseBandClick()){updateBandClickNetwork();if(!bandClickIsSolo())calibrateBandClickClock()}});
 window.addEventListener('offline',updateBandClickNetwork);
 document.addEventListener('pointerdown',resumeBandClickAudioFromGesture,{passive:true});
 document.addEventListener('touchend',resumeBandClickAudioFromGesture,{passive:true});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&activeBandClickState().playing){if(bandClickAudioContext?.state==='suspended')bandClickAudioContext.resume().catch(()=>{});if(bandClickAudioUnlocked)beginBandClickScheduler()}});
+document.addEventListener('visibilitychange',()=>{syncBandClickWakeLock();if(document.visibilityState==='visible'&&activeBandClickState().playing){if(bandClickAudioContext?.state==='suspended')bandClickAudioContext.resume().catch(()=>{});if(bandClickAudioUnlocked)beginBandClickScheduler()}});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(document.body.classList.contains('band-click-mode'))closeBandClick();else if(document.body.classList.contains('drum-mode'))closeDrumView()});
 function songRowAction(id){
  if(window.matchMedia&&window.matchMedia('(max-width:900px)').matches)playSong(id);
