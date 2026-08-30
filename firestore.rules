@@ -76,7 +76,8 @@ service cloud.firestore {
         && request.resource.data.bpm is number
         && request.resource.data.bpm >= 30
         && request.resource.data.bpm <= 300
-        && request.resource.data.beatsPerBar == 4
+        && request.resource.data.beatsPerBar is int
+        && request.resource.data.beatsPerBar in [2, 3, 4, 5, 6, 7]
         && request.resource.data.countInBars is int
         && request.resource.data.countInBars >= 0
         && request.resource.data.countInBars <= 2
