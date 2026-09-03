@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Pozorantsi Song Base — Band Click v8 LIVE SOLO BPM</title>
+<title>Pozorantsi Song Base — Band Click v9 JULY AUTHOR FIX</title>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preload" href="band-click-track-60.m4a" as="audio" type="audio/mp4">
@@ -574,7 +574,7 @@ body.band-click-mode{overflow:hidden}
 <div id="miniVideo"><div class="yt-head"><div><div class="yt-title" id="ytModalTitle">YouTube</div><div class="yt-sub" id="ytModalArtist">Pozorantsi</div></div><div style="display:flex;gap:8px"><a id="ytFallbackLinkTop" class="yt-link" target="_blank">Nowa karta</a><button class="yt-close" onclick="toggleMiniVideo(false)">Zamknij</button></div></div><div style="position:relative"><div id="youtubePlayer"></div><button id="safeYoutubeCloseBtn" onclick="toggleMiniVideo(false)">Zamknij YouTube</button><div id="ytFallback" style="display:none;position:absolute;inset:0;background:#000000db;color:white;padding:18px;text-align:center;font-size:14px;align-items:center;justify-content:center;flex-direction:column;gap:12px;border-radius:12px"><div>YouTube zablokował osadzony player.</div><a id="ytFallbackLink" target="_blank" style="color:#a778ff;font-weight:800">Otwórz w YouTube</a></div></div></div>
 <div class="modal" id="songModal"><div class="modal-box"><h2 id="modalTitle">Dodaj utwór</h2><label>Link YouTube</label><input id="ytUrl" placeholder="Wklej link z YouTube..."><div class="modal-actions" style="justify-content:flex-start;margin-top:0;margin-bottom:8px"><button class="top-btn" onclick="analyzeLink()">Pobierz tytuł z YouTube</button></div><div class="form-grid"><div><label>Wykonawca</label><input id="artistInput"></div><div><label>Tytuł</label><input id="titleInput"></div><div><label>BPM</label><input id="bpmInput" type="number"></div><div><label>Tonacja oryginalna</label><input id="keyInput" placeholder="np. Fm"></div><div><label>Tonacja Pozorantsi</label><input id="bandKeyInput" placeholder="np. Em"></div><div><label>Język utworu</label><select id="languageInput"><option value="INNY">INNY</option><option value="PL">PL</option></select></div><div><label>Wokal</label><select id="vocalInput"></select></div></div><label>Status</label><select id="statusInput"></select><label>Notatki</label><textarea id="notesInput" rows="3"></textarea><div class="modal-actions"><button class="top-btn" onclick="closeModal()">Anuluj</button><button class="add-btn" style="padding:0 20px" onclick="saveSong()">Zapisz</button></div></div></div>
 <div class="modal" id="setlistsModal"><div class="modal-box" style="width:780px"><h2>Setlisty</h2><p id="setlistsHelp" style="color:var(--m);font-size:14px;line-height:1.5;margin-top:0">Setlisty są wspólne dla zespołu.</p><div class="addrow" id="setlistModalCreate"><input id="newSetlistInputModal" placeholder="Nazwa nowej setlisty..."><button onclick="addSetlistFromModal()">+</button></div><div id="setlistsModalList"></div><div class="modal-actions"><button class="top-btn" onclick="setlistsModal.classList.remove('open')">Zamknij</button></div></div></div>
-<div class="modal" id="waitlistModal"><div class="modal-box waitlist-box" style="width:1040px"><h2>Poczekalnia</h2><p style="color:var(--m);font-size:14px;line-height:1.5;margin-top:0">Propozycje utworów od zespołu. Każdy może dodać i odsłuchać propozycję.</p><div class="modal-actions" style="justify-content:flex-start;margin-bottom:12px"><button class="wait-btn" style="padding:10px 16px" onclick="openWaitlistAdd()">＋ Dodaj do poczekalni</button></div><div class="waitlist-filters"><select id="waitDateSort" onchange="renderWaitlist()"><option value="new">Data dodania: najnowsze</option><option value="old">Data dodania: najstarsze</option></select><select id="waitUserFilter" onchange="renderWaitlist()"><option value="">Kto dodał: wszyscy</option></select><select id="waitBpmSort" onchange="renderWaitlist()"><option value="">BPM: bez sortowania</option><option value="asc">BPM rosnąco</option><option value="desc">BPM malejąco</option></select><select id="waitLanguageFilter" onchange="renderWaitlist()"><option value="">Język: wszystkie</option><option value="PL">Tylko PL</option></select></div><div id="waitlistList"></div><div class="modal-actions"><button class="top-btn" onclick="waitlistModal.classList.remove('open')">Zamknij</button></div></div></div>
+<div class="modal" id="waitlistModal"><div class="modal-box waitlist-box" style="width:1040px"><h2>Poczekalnia</h2><p style="color:var(--m);font-size:14px;line-height:1.5;margin-top:0">Propozycje utworów od zespołu. Każdy może dodać i odsłuchać propozycję.</p><div class="modal-actions" style="justify-content:flex-start;margin-bottom:12px"><button class="wait-btn" style="padding:10px 16px" onclick="openWaitlistAdd()">＋ Dodaj do poczekalni</button><button id="waitlistJulyAuthorFixBtn" class="top-btn" style="display:none;padding:10px 16px" onclick="fixJulyWaitlistAuthors()">Popraw autorów z lipca</button></div><div class="waitlist-filters"><select id="waitDateSort" onchange="renderWaitlist()"><option value="new">Data dodania: najnowsze</option><option value="old">Data dodania: najstarsze</option></select><select id="waitUserFilter" onchange="renderWaitlist()"><option value="">Kto dodał: wszyscy</option></select><select id="waitBpmSort" onchange="renderWaitlist()"><option value="">BPM: bez sortowania</option><option value="asc">BPM rosnąco</option><option value="desc">BPM malejąco</option></select><select id="waitLanguageFilter" onchange="renderWaitlist()"><option value="">Język: wszystkie</option><option value="PL">Tylko PL</option></select></div><div id="waitlistList"></div><div class="modal-actions"><button class="top-btn" onclick="waitlistModal.classList.remove('open')">Zamknij</button></div></div></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyBGhOE6PCoSZVKv7WBZ_7o-izkaV3HZ5Yk",authDomain:"pozorantsi-song-base.firebaseapp.com",projectId:"pozorantsi-song-base",storageBucket:"pozorantsi-song-base.firebasestorage.app",messagingSenderId:"365681981895",appId:"1:365681981895:web:ac5042a6480ef8ef2641e2"};
 firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.firestore();
@@ -816,6 +816,7 @@ function updateAdminUi(){
  if(window.vocalAdminGroup)vocalAdminGroup.style.display=isAdmin?'block':'none';
  if(window.mainAddBtn)mainAddBtn.style.display=isAdmin?'block':'none';
  if(window.waitlistBtn)waitlistBtn.style.display=canUseWaitlist()?'block':'none';
+ if(window.waitlistJulyAuthorFixBtn)waitlistJulyAuthorFixBtn.style.display=isAdmin?'inline-block':'none';
  if(window.setlistCreateGroup)setlistCreateGroup.style.display=canManageSetlists()?'grid':'none';
  if(window.setlistModalCreate)setlistModalCreate.style.display=canManageSetlists()?'grid':'none';
  if(window.setlistsHelp)setlistsHelp.textContent=canManageSetlists()?'Setlisty są wspólne i mogą być edytowane przez członków zespołu.':currentRole==='guest'?'Czasowy dostęp: cały repertuar i setlisty są dostępne tylko do odczytu.':'Setlisty są dostępne tylko do odczytu.';
@@ -1430,9 +1431,30 @@ function guessLanguageFromText(txt){
 }
 function parseTitle(t){let c=t.replace(/\[[^\]]*\]|\([^\)]*\)/g,'').replace(/official|video|audio|lyrics|hd|hq/gi,'').trim();const sep=[' - ',' – ',' — ',' | '].find(x=>c.includes(x));if(sep){const p=c.split(sep);return{artist:p[0].trim(),title:p.slice(1).join(sep).trim()}}return{artist:'',title:c}}
 
+function waitlistSongMonth(s){
+ const raw=s&&s.date;
+ if(raw&&typeof raw.toDate==='function'){const d=raw.toDate();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}
+ const text=String(raw||'').trim(),iso=text.match(/^(\d{4})-(\d{2})/);if(iso)return`${iso[1]}-${iso[2]}`;
+ const pl=text.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);if(pl)return`${pl[3]}-${String(Number(pl[2])).padStart(2,'0')}`;
+ const created=s&&s.createdAt&&typeof s.createdAt.toDate==='function'?s.createdAt.toDate():null;return created?`${created.getFullYear()}-${String(created.getMonth()+1).padStart(2,'0')}`:''
+}
+function julyWaitlistAuthorFixCandidates(){return songs.filter(s=>!s.pendingDelete&&String(s.status||'').includes('Poczekalnia')&&waitlistSongMonth(s)==='2026-07'&&String(s.addedBy||'').trim().toLocaleLowerCase('pl')==='marek')}
+async function fixJulyWaitlistAuthors(){
+ if(!isAdmin)return alert('Tylko Marek / administrator.');const items=julyWaitlistAuthorFixCandidates();
+ if(!items.length)return alert('Nie znaleziono w Poczekalni pozycji z lipca 2026 opisanych jako dodane przez Marka. Nic nie zostało zmienione.');
+ const titles=items.map((s,i)=>`${i+1}. ${s.artist||'—'} — ${s.title||'—'}`).join('\n');
+ if(!confirm(`Znaleziono ${items.length} pozycji.\n\n${titles}\n\nZmienić WYŁĄCZNIE opis „Dodano przez” z Marek na Łukasz?`))return;
+ const button=document.getElementById('waitlistJulyAuthorFixBtn');if(button){button.disabled=true;button.textContent='Zapisywanie…'}
+ try{
+   const batch=db.batch();for(const s of items)batch.update(db.collection('songs').doc(s.id),{addedBy:'Łukasz'});await batch.commit();
+   for(const s of items)s.addedBy='Łukasz';renderWaitlist();alert(`Gotowe. Zmieniono wyłącznie autora przy ${items.length} propozycjach z lipca 2026.`)
+ }catch(error){console.error('July waitlist author fix',error);alert('Nie udało się zapisać korekty. Operacja nie została wykonana.')}finally{if(button)button.disabled=false;renderWaitlist()}
+}
 function openWaitlistModal(){if(!canUseWaitlist())return alert('Poczekalnia nie jest dostępna dla tej roli.');waitlistModal.classList.add('open');renderWaitlist()}
 function renderWaitlist(){
  let items=songs.filter(s=>!s.pendingDelete&&String(s.status||'').includes('Poczekalnia'));
+
+ const fixButton=document.getElementById('waitlistJulyAuthorFixBtn');if(fixButton){const count=julyWaitlistAuthorFixCandidates().length;fixButton.style.display=isAdmin?'inline-block':'none';fixButton.disabled=count===0;fixButton.textContent=count?`Popraw autorów z lipca (${count})`:'Autorzy z lipca poprawieni'}
 
  const users=getUserOptions().sort((a,b)=>a.localeCompare(b,'pl'));
  if(window.waitUserFilter){
