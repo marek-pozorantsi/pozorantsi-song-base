@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Pozorantsi Song Base — Band Click v7 GUEST 30 DAYS</title>
+<title>Pozorantsi Song Base — Band Click v8 LIVE SOLO BPM</title>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preload" href="band-click-track-60.m4a" as="audio" type="audio/mp4">
@@ -587,7 +587,7 @@ const VALID_ROLES=['member','vocalist','guest'];
 const BAND_CLICK_MASTER_NAME='Paweł';
 const BAND_CLICK_METERS={2:'2/4',3:'3/4',4:'4/4',5:'5/4',6:'6/8',7:'7/8'};
 const BAND_CLICK_DEFAULT_STATE={playing:false,bpm:120,beatsPerBar:4,countInBars:1,setlistId:'',setlistName:'',songId:'',songTitle:'Tempo ręczne',songArtist:'Pozorantsi',startAtMs:0,revision:0,updatedBy:'',updatedByUid:''};
-let bandClickMode=localStorage.getItem('pozorantsi_bc_mode')==='band'?'band':'solo',bandClickState={...BAND_CLICK_DEFAULT_STATE},bandClickSoloState={...BAND_CLICK_DEFAULT_STATE},bandClickUnsubscribe=null,bandClickAudioContext=null,bandClickAudioUnlocked=false,bandClickSchedulerTimer=null,bandClickVisualFrame=null,bandClickNextBeatIndex=0,bandClickClockOffsetMs=Number(localStorage.getItem('pozorantsi_bc_clock_offset')||0),bandClickClockReady=false,bandClickLastBeat=-1,bandClickLastSnapshotAt=0,bandClickStarting=false;
+let bandClickMode=localStorage.getItem('pozorantsi_bc_mode')==='band'?'band':'solo',bandClickState={...BAND_CLICK_DEFAULT_STATE},bandClickSoloState={...BAND_CLICK_DEFAULT_STATE},bandClickUnsubscribe=null,bandClickAudioContext=null,bandClickAudioUnlocked=false,bandClickSchedulerTimer=null,bandClickVisualFrame=null,bandClickNextBeatIndex=0,bandClickClockOffsetMs=Number(localStorage.getItem('pozorantsi_bc_clock_offset')||0),bandClickClockReady=false,bandClickLastBeat=-1,bandClickLastSnapshotAt=0,bandClickStarting=false,bandClickScheduledOscillators=new Set();
 const BAND_CLICK_IPHONE_TRACK_ORIGIN=6;
 let bandClickHtmlAudio=null,bandClickHtmlAudioUrl='./band-click-track-60.m4a',bandClickHtmlAudioReady=false,bandClickHtmlAudioVolumeStamp=-1,bandClickHtmlClipStopTimer=null,bandClickHtmlRebuildTimer=null,bandClickHtmlTimers=new Set(),bandClickIphoneStartToken=0;
 let bandClickWakeLock=null,bandClickWakeLockPending=false;
@@ -733,8 +733,9 @@ function toggleLeft(){app.classList.toggle('left-open');leftToggle.textContent=a
 
 const CORE_USERS=['Marek','Radek','Łukasz','Paweł','Maciek','Piotr'];
 const RESERVED_NON_VOCAL_NAMES=new Set(['marek']);
+const UNSPECIFIED_VOCAL='??';
 function isReservedNonVocalist(name){return RESERVED_NON_VOCAL_NAMES.has(String(name||'').trim().toLocaleLowerCase('pl'))}
-function cleanVocalistList(values=[]){return [...new Set((Array.isArray(values)?values:[]).map(v=>String(v||'').trim()).filter(v=>v&&!isReservedNonVocalist(v)))]}
+function cleanVocalistList(values=[]){return [...new Set((Array.isArray(values)?values:[]).map(v=>String(v||'').trim()).filter(v=>v&&v!==UNSPECIFIED_VOCAL&&!isReservedNonVocalist(v)))]}
 function getUserOptions(){
  return [...new Set([...profiles.map(p=>p.displayName),...songs.map(s=>s.addedBy),...songs.map(s=>s.updatedBy)].filter(Boolean))];
 }
@@ -827,11 +828,11 @@ function isBandClickMaster(){const n=String(userName||'').trim().toLocaleLowerCa
 function requireAdminMain(){if(!canManageMain()){alert('Tylko administrator może dodawać, usuwać lub przenosić utwory do bazy głównej.');return false}return true}
 function requireSongEdit(){if(!canEditSongs()){alert('Twoja rola pozwala na podgląd repertuaru, ale nie na edycję głównych danych utworów.');return false}return true}
 function requireSetlistEdit(){if(!canManageSetlists()){alert('Setlisty są dla tego konta dostępne tylko do odczytu.');return false}return true}
-function allVocalNames(){return cleanVocalistList([...(vocalNames||[]),...songs.map(s=>s.vocal).filter(Boolean)])}
+function allVocalNames(){const names=cleanVocalistList([...(vocalNames||[]),...songs.map(s=>s.vocal).filter(Boolean)]);if(songs.some(s=>String(s.vocal||'').trim()===UNSPECIFIED_VOCAL))names.push(UNSPECIFIED_VOCAL);return names}
 function refreshVocalSelects(currentVocal=''){
- const all=allVocalNames(),active=cleanVocalistList(vocalNames).filter(v=>!inactiveVocalNames.includes(v));
+ const all=allVocalNames(),active=cleanVocalistList(all).filter(v=>!inactiveVocalNames.includes(v));
  vocalSelect.innerHTML='<option value="">Wokal</option>'+all.map(v=>`<option value="${escAttr(v)}">${esc(v)}${inactiveVocalNames.includes(v)?' (nieaktywny)':''}</option>`).join('');
- const editOptions=[...new Set([...active,currentVocal].filter(Boolean))];
+ const editOptions=[...new Set([UNSPECIFIED_VOCAL,...active,currentVocal].filter(Boolean))];
  vocalInput.innerHTML=editOptions.map(v=>`<option value="${escAttr(v)}">${esc(v)}${inactiveVocalNames.includes(v)?' (nieaktywny)':''}</option>`).join('')
 }
 function renderLetters(){const ls=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','R','S','T','U','W','Z','#'];letters.innerHTML=ls.map(l=>`<button class="letter ${activeLetter===l?'active':''}" onclick="setLetter('${l}')">${l}</button>`).join('')}function setLetter(l){activeLetter=activeLetter===l?'':l;renderLetters();render()}
@@ -983,13 +984,14 @@ function applyBandClickState(next){
  if(document.body.classList.contains('band-click-mode'))startBandClickVisuals();
 }
 function applyBandClickSoloState(next){
- const restart=next.playing&&(!bandClickSoloState.playing||next.revision!==bandClickSoloState.revision||next.bpm!==bandClickSoloState.bpm||next.beatsPerBar!==bandClickSoloState.beatsPerBar||next.startAtMs!==bandClickSoloState.startAtMs);
- const stop=!next.playing&&bandClickSoloState.playing;
+ const previous=bandClickSoloState,liveBpmChange=previous.playing&&next.playing&&next.bpm!==previous.bpm&&next.beatsPerBar===previous.beatsPerBar;
+ const restart=next.playing&&(!previous.playing||next.revision!==previous.revision||next.bpm!==previous.bpm||next.beatsPerBar!==previous.beatsPerBar||next.startAtMs!==previous.startAtMs);
+ const stop=!next.playing&&previous.playing;
  bandClickSoloState=next;rememberBandClickSoloState();
  if(!bandClickIsSolo())return;
  renderBandClickControls();updateBandClickUi();
  if(stop)stopBandClickScheduler();
- if(restart&&bandClickAudioUnlocked)beginBandClickScheduler();
+ if(restart&&bandClickAudioUnlocked&&!(liveBpmChange&&bandClickUsesHtmlAudio()&&updateBandClickIphoneTempo(previous,next)))beginBandClickScheduler();
  if(document.body.classList.contains('band-click-mode'))startBandClickVisuals();
 }
 function bandClickSetMode(mode){
@@ -1011,6 +1013,7 @@ function bandClickEligibleSongs(setlistId=activeBandClickState().setlistId){
 function renderBandClickControls(){
  const setNode=document.getElementById('bcSetlist'),songNode=document.getElementById('bcSong');if(!setNode||!songNode)return;
  const state=activeBandClickState(),canControl=bandClickCanControl(),locked=!canControl||state.playing||bandClickStarting;
+ const bpmLocked=!canControl||bandClickStarting||(!bandClickIsSolo()&&state.playing);
  const soloMode=document.getElementById('bcModeSolo'),bandMode=document.getElementById('bcModeBand');if(soloMode)soloMode.classList.toggle('active',bandClickIsSolo());if(bandMode)bandMode.classList.toggle('active',!bandClickIsSolo());
  setNode.innerHTML='<option value="">Cała baza utworów</option>'+setlists.filter(s=>!s.guest).map(s=>`<option value="${escAttr(s.id)}">${esc(s.name)} (${(s.songs||[]).length})</option>`).join('');
  if([...setNode.options].some(o=>o.value===state.setlistId))setNode.value=state.setlistId;else setNode.value='';
@@ -1019,9 +1022,9 @@ function renderBandClickControls(){
  if(state.songId&&!available.some(s=>s.id===state.songId))songNode.innerHTML+=`<option value="${escAttr(state.songId)}">${esc(state.songArtist)} — ${esc(state.songTitle)}</option>`;
  songNode.value=state.songId||'';
  setNode.disabled=locked;songNode.disabled=locked;
- const bpm=document.getElementById('bcBpm');if(bpm){bpm.value=state.bpm;bpm.disabled=locked}
+ const bpm=document.getElementById('bcBpm');if(bpm){bpm.value=state.bpm;bpm.disabled=bpmLocked}
  const meter=document.getElementById('bcMeter');if(meter){meter.value=String(state.beatsPerBar);meter.disabled=locked}
- ['bcMinus','bcPlus'].forEach(id=>{const n=document.getElementById(id);if(n)n.disabled=locked});
+ ['bcMinus','bcPlus'].forEach(id=>{const n=document.getElementById(id);if(n)n.disabled=bpmLocked});
  [0,1,2].forEach(n=>{const b=document.getElementById('bcCount'+n);if(b){b.classList.toggle('active',state.countInBars===n);b.disabled=locked}});
  const start=document.getElementById('bcStartBtn');if(start){start.disabled=!canControl||bandClickStarting;start.textContent=canControl?(state.playing?'STOP':(bandClickIsSolo()?'START SOLO':'START')):'STERUJE PAWEŁ';start.classList.toggle('stop',state.playing)}
 }
@@ -1062,10 +1065,12 @@ async function bandClickSongChanged(){
  try{await applyActiveBandClickPatch({songId:id,songTitle:song?.title||'Tempo ręczne',songArtist:song?.artist||'Pozorantsi',bpm:song?clampBandClickBpm(song.bpm):state.bpm,revision:state.revision+1})}catch(e){bandClickWriteError(e)}
 }
 async function bandClickBpmChanged(){
- const state=activeBandClickState();if(!bandClickCanControl()||state.playing)return renderBandClickControls();const bpm=clampBandClickBpm(document.getElementById('bcBpm').value);
- try{await applyActiveBandClickPatch({bpm,revision:state.revision+1})}catch(e){bandClickWriteError(e)}
+ const state=activeBandClickState();if(!bandClickCanControl()||(state.playing&&!bandClickIsSolo()))return renderBandClickControls();const bpm=clampBandClickBpm(document.getElementById('bcBpm').value);
+ const now=bandClickNow(),oldBeatMs=60000/state.bpm,newBeatMs=60000/bpm,elapsed=Math.max(0,now-state.startAtMs),beatPosition=state.playing&&state.startAtMs?elapsed/oldBeatMs:0;
+ const startAtMs=state.playing?(state.startAtMs>now?state.startAtMs:now-beatPosition*newBeatMs):state.startAtMs;
+ try{await applyActiveBandClickPatch({bpm,startAtMs,revision:state.revision+1})}catch(e){bandClickWriteError(e)}
 }
-function bandClickStepBpm(delta){const state=activeBandClickState();if(!bandClickCanControl()||state.playing)return;document.getElementById('bcBpm').value=clampBandClickBpm(state.bpm+Number(delta||0));bandClickBpmChanged()}
+function bandClickStepBpm(delta){const state=activeBandClickState();if(!bandClickCanControl()||(state.playing&&!bandClickIsSolo()))return;document.getElementById('bcBpm').value=clampBandClickBpm(state.bpm+Number(delta||0));bandClickBpmChanged()}
 async function bandClickMeterChanged(){const state=activeBandClickState();if(!bandClickCanControl()||state.playing)return renderBandClickControls();const beats=Number(document.getElementById('bcMeter').value);try{await applyActiveBandClickPatch({beatsPerBar:BAND_CLICK_METERS[beats]?beats:4,revision:state.revision+1})}catch(e){bandClickWriteError(e)}}
 async function bandClickSetCountIn(bars){const state=activeBandClickState();if(!bandClickCanControl()||state.playing)return;try{await applyActiveBandClickPatch({countInBars:bars,revision:state.revision+1})}catch(e){bandClickWriteError(e)}}
 function bandClickWriteError(error){console.error('Band Click write',error);if(bandClickIsSolo())alert('Nie udało się uruchomić metronomu SOLO. Zamknij widok CLICK i spróbuj ponownie.');else{alert('Nie udało się zapisać Band Click. Sprawdź połączenie i upewnij się, że nowe reguły Firestore zostały wdrożone.');listenBandClick()}}
@@ -1089,6 +1094,11 @@ function bandClickUsesHtmlAudio(){
 function writeBandClickWavText(view,offset,text){for(let i=0;i<text.length;i++)view.setUint8(offset+i,text.charCodeAt(i))}
 function bandClickIphoneTrackConfig(bpm=activeBandClickState().bpm){
  const value=clampBandClickBpm(bpm),base=value<=120?60:150;return{bpm:value,base,rate:value/base,src:base===60?'./band-click-track-60.m4a':'./band-click-track-150.m4a'}
+}
+function updateBandClickIphoneTempo(previous,next){
+ const audio=bandClickHtmlAudio||document.getElementById('bcIphoneAudio'),before=bandClickIphoneTrackConfig(previous.bpm),after=bandClickIphoneTrackConfig(next.bpm);
+ if(!audio||audio.paused!==false||!bandClickHtmlAudioReady||before.src!==after.src)return false;
+ try{prepareBandClickHtmlAudio(false,next.bpm);audio.preservesPitch=false;audio.webkitPreservesPitch=false;audio.playbackRate=after.rate;setBandClickAudioStatus(`iPHONE AUDIO: tempo ${after.bpm} BPM — zmienione bez zatrzymania.`,'ok');return true}catch(error){console.warn('Band Click live iPhone tempo',error);return false}
 }
 function bandClickCreateHtmlClickUrl(bpm=activeBandClickState().bpm){return bandClickIphoneTrackConfig(bpm).src}
 function bandClickPositionHtmlAudioForTest(audio,bpm=activeBandClickState().bpm){
@@ -1153,7 +1163,7 @@ function syncBandClickWakeLock(){
 }
 async function unlockBandClickAudio(showError=true){
  if(bandClickUsesHtmlAudio()){
-   try{prepareBandClickHtmlAudio()}catch(error){setBandClickAudioStatus('Brakuje ciągłych plików M4A. Wgraj pełną paczkę v6.','error');if(showError)alert('Brakuje plików band-click-track-60.m4a i band-click-track-150.m4a. Wgraj pełną paczkę v6.');return false}
+   try{prepareBandClickHtmlAudio()}catch(error){setBandClickAudioStatus('Brakuje ciągłych plików M4A. Wgraj pełną paczkę v8.','error');if(showError)alert('Brakuje plików band-click-track-60.m4a i band-click-track-150.m4a. Wgraj pełną paczkę v8.');return false}
    if(bandClickHtmlAudioReady){bandClickAudioUnlocked=true;return true}
    setBandClickAudioStatus('iPhone wykryty: dotknij TEST DŹWIĘKU. START wizualny i mocny błysk działają również bez dźwięku.','error');if(showError)alert('Na iPhonie naciśnij TEST DŹWIĘKU. Sam błysk można uruchomić także bez dźwięku.');return false
  }
@@ -1194,7 +1204,7 @@ function bandClickLocalVolume(){return Math.max(0,Math.min(1,Number(localStorage
 function bandClickAudioOffset(){return clampBandClickOffset(localStorage.getItem('pozorantsi_bc_offset')||0)}
 function scheduleBandClickSound(when,downbeat){
  if(!bandClickAudioContext||bandClickLocalVolume()<=0||when<bandClickAudioContext.currentTime-.02)return;
- const ctx=bandClickAudioContext,osc=ctx.createOscillator(),gain=ctx.createGain(),volume=bandClickLocalVolume(),duration=downbeat?.085:.06;osc.type='square';osc.frequency.setValueAtTime(downbeat?1320:880,when);osc.frequency.exponentialRampToValueAtTime(downbeat?720:560,when+duration*.7);gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume*(downbeat?.58:.38)),when+.003);gain.gain.exponentialRampToValueAtTime(.0001,when+duration);osc.connect(gain).connect(ctx.destination);osc.start(when);osc.stop(when+duration+.015)
+ const ctx=bandClickAudioContext,osc=ctx.createOscillator(),gain=ctx.createGain(),volume=bandClickLocalVolume(),duration=downbeat?.085:.06;osc.type='square';osc.frequency.setValueAtTime(downbeat?1320:880,when);osc.frequency.exponentialRampToValueAtTime(downbeat?720:560,when+duration*.7);gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume*(downbeat?.58:.38)),when+.003);gain.gain.exponentialRampToValueAtTime(.0001,when+duration);osc.connect(gain).connect(ctx.destination);bandClickScheduledOscillators.add(osc);osc.onended=()=>bandClickScheduledOscillators.delete(osc);osc.start(when);osc.stop(when+duration+.015)
 }
 function beginBandClickScheduler(){
  stopBandClickScheduler();const state=activeBandClickState(),htmlAudio=bandClickUsesHtmlAudio();if(!state.playing||!state.startAtMs||!bandClickAudioUnlocked)return;if(htmlAudio){if(!bandClickHtmlAudioReady)return setBandClickAudioStatus('Błysk działa. Aby dodać dźwięk, uruchom TEST DŹWIĘKU.','error');beginBandClickIphoneTrack(state);return}if(!bandClickAudioContext)return;
@@ -1211,7 +1221,7 @@ function beginBandClickScheduler(){
  };
  run();bandClickSchedulerTimer=setInterval(run,25)
 }
-function stopBandClickScheduler(){bandClickIphoneStartToken++;if(bandClickSchedulerTimer){clearInterval(bandClickSchedulerTimer);bandClickSchedulerTimer=null}for(const timer of bandClickHtmlTimers)clearTimeout(timer);bandClickHtmlTimers.clear();stopBandClickHtmlClip()}
+function stopBandClickScheduler(){bandClickIphoneStartToken++;if(bandClickSchedulerTimer){clearInterval(bandClickSchedulerTimer);bandClickSchedulerTimer=null}for(const osc of bandClickScheduledOscillators)try{osc.onended=null;osc.stop(0)}catch{}bandClickScheduledOscillators.clear();for(const timer of bandClickHtmlTimers)clearTimeout(timer);bandClickHtmlTimers.clear();stopBandClickHtmlClip()}
 function startBandClickVisuals(){
  if(bandClickVisualFrame)cancelAnimationFrame(bandClickVisualFrame);
  const draw=()=>{
@@ -1257,7 +1267,24 @@ function songRowAction(id){
  else selectSong(id);
 }
 function statusClass(s){if(String(s).includes('Poczekalnia'))return'wait';if(String(s).includes('Hit'))return'hit';if(String(s).includes('Gotowy'))return'ready';if(String(s).includes('Archiwalny'))return'archive';return'prep'}function selectSong(id){selectedId=id;render();renderDetails()}function renderDetails(){const s=songs.find(x=>x.id===selectedId)||songs.find(x=>!x.pendingDelete);if(!s){details.innerHTML='<div style="color:var(--m)">Brak utworu.</div>';return}details.innerHTML=`<div class="details-title"><h2>${esc(s.title)}</h2><button class="close" onclick="toggleRight()">×</button></div><div class="details-artist">${esc(s.artist)}</div><div class="tabs"><div class="tab active">INFO</div><div class="tab">NOTATKI</div></div>${line('◷','BPM',s.bpm||'-')}${line('♬','Tonacja oryginalna',s.key||'-')}${line('♬','Tonacja Pozorantsi',s.bandKey||'-')}${line('🎙','Wokal',s.vocal||'-')}${line('●','Status',s.status||'-')}${line('🌐','Język utworu',s.language==='PL'?'PL':'INNY')}${line('▣','Data dodania',fmtDate(s.date))}${line('👤','Dodano przez',esc(s.addedBy||'-'))}${line('✎','Ostatnio edytował',esc(s.updatedBy||'-'))}${line('▻','YouTube','<a style="color:var(--v2)" target="_blank" rel="noopener noreferrer" href="'+escAttr(s.yt)+'">Otwórz awaryjnie ↗</a>')}<div style="margin-top:20px;color:var(--m);font-weight:700">Notatki</div><div style="margin-top:10px;line-height:1.6">${esc(s.notes||'Brak notatek.')}</div><div class="detail-actions"><button class="big-action primary" onclick="playSong('${s.id}')">▶ Odtwórz</button><button class="big-action" onclick="showYoutube('${s.id}')">📺 Pokaż YouTube u góry</button>${canEditSongs()?`<button class="big-action" onclick="openEdit('${s.id}')">✎ Edytuj</button>`:''}${canManageSetlists()?`<button class="big-action" onclick="addSongToSetlist('${s.id}')">＋ Dodaj do setlisty</button>`:''}${canRequestDelete()?`<button class="big-action danger" onclick="requestDeleteSong('${s.id}')">🗑 Zgłoś do usunięcia</button>`:''}</div>`}function line(i,l,v){return`<div class="detail-line"><div>${i}</div><div class="dl">${l}</div><div class="dv">${v}</div></div>`}
-function openMainAdd(){if(!requireAdminMain())return;openModal()}function openModal(){editingId=null;songModal.dataset.waitlist='';statusInput.disabled=false;modalTitle.textContent='Dodaj utwór';ytUrl.value=artistInput.value=titleInput.value=bpmInput.value=keyInput.value=bandKeyInput.value=notesInput.value='';if(window.languageInput)languageInput.value='INNY';refreshVocalSelects();vocalInput.value=vocalNames.find(v=>!inactiveVocalNames.includes(v))||'';statusInput.value='🟡 W przygotowaniu';songModal.classList.add('open')}function closeModal(){songModal.dataset.waitlist='';songModal.classList.remove('open')}function openEdit(id){if(!requireSongEdit())return;songModal.dataset.waitlist='';statusInput.disabled=!isAdmin;const s=songs.find(x=>x.id===id);if(!s)return;editingId=id;modalTitle.textContent='Edytuj utwór';ytUrl.value=s.yt||'';artistInput.value=s.artist||'';titleInput.value=s.title||'';bpmInput.value=s.bpm||'';keyInput.value=s.key||'';bandKeyInput.value=s.bandKey||'';if(window.languageInput)languageInput.value=s.language==='PL'?'PL':'INNY';refreshVocalSelects(s.vocal||'');vocalInput.value=s.vocal||vocalNames.find(v=>!inactiveVocalNames.includes(v))||'';statusInput.value=s.status||'🟡 W przygotowaniu';notesInput.value=s.notes||'';songModal.classList.add('open')}
+function openMainAdd(){if(!requireAdminMain())return;openModal()}
+function openModal(){
+ editingId=null;songModal.dataset.waitlist='';songModal.dataset.editingWaitlist='';songModal.dataset.returnToWaitlist='';statusInput.disabled=false;modalTitle.textContent='Dodaj utwór';
+ ytUrl.value=artistInput.value=titleInput.value=bpmInput.value=keyInput.value=bandKeyInput.value=notesInput.value='';if(window.languageInput)languageInput.value='INNY';
+ refreshVocalSelects();vocalInput.value=vocalNames.find(v=>!inactiveVocalNames.includes(v))||UNSPECIFIED_VOCAL;statusInput.value='🟡 W przygotowaniu';songModal.classList.add('open')
+}
+function closeModal(){
+ const returnToWaitlist=songModal.dataset.returnToWaitlist==='1';songModal.dataset.waitlist='';songModal.dataset.editingWaitlist='';songModal.dataset.returnToWaitlist='';songModal.classList.remove('open');
+ if(returnToWaitlist&&canUseWaitlist()){waitlistModal.classList.add('open');renderWaitlist()}
+}
+function openEdit(id){
+ if(!requireSongEdit())return;const s=songs.find(x=>x.id===id);if(!s)return;
+ const editingWaitlist=String(s.status||'').includes('Poczekalnia'),returnToWaitlist=editingWaitlist&&waitlistModal.classList.contains('open');
+ songModal.dataset.waitlist='';songModal.dataset.editingWaitlist=editingWaitlist?'1':'';songModal.dataset.returnToWaitlist=returnToWaitlist?'1':'';statusInput.disabled=editingWaitlist||!isAdmin;
+ editingId=id;modalTitle.textContent=editingWaitlist?'Edytuj propozycję':'Edytuj utwór';ytUrl.value=s.yt||'';artistInput.value=s.artist||'';titleInput.value=s.title||'';bpmInput.value=s.bpm||'';keyInput.value=s.key||'';bandKeyInput.value=s.bandKey||'';
+ if(window.languageInput)languageInput.value=s.language==='PL'?'PL':'INNY';refreshVocalSelects(s.vocal||UNSPECIFIED_VOCAL);vocalInput.value=s.vocal||UNSPECIFIED_VOCAL;statusInput.value=editingWaitlist?'':(s.status||'🟡 W przygotowaniu');notesInput.value=s.notes||'';
+ if(returnToWaitlist)waitlistModal.classList.remove('open');songModal.classList.add('open')
+}
 async function saveSong(){
  if(!userName){openUserModal();return}
  if(editingId&&!canEditSongs())return alert('Twoja rola nie pozwala edytować utworów.');
@@ -1268,10 +1295,11 @@ async function saveSong(){
  const duplicate=songs.find(s=>s.ytId===id&&s.id!==editingId);
  if(duplicate&&!confirm(`Ten film jest już zapisany jako „${duplicate.artist} — ${duplicate.title}”. Zapisać mimo to?`))return;
  const existing=editingId?songs.find(x=>x.id===editingId):null;
- const obj={artist:artistInput.value.trim(),title:titleInput.value.trim(),bpm:Number(bpmInput.value||0),key:keyInput.value.trim(),bandKey:bandKeyInput.value.trim(),vocal:vocalInput.value,language:(window.languageInput?(languageInput.value==='PL'?'PL':'INNY'):'INNY'),status:(editingId&&!isAdmin&&existing)?existing.status:statusInput.value,date:editingId?(existing?.date||today()):today(),yt:ytUrl.value.trim(),ytId:id,notes:notesInput.value.trim(),pendingDelete:editingId?(existing?.pendingDelete||false):false,updatedBy:userName,updatedUid:authUser.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+ const editingWaitlist=songModal.dataset.editingWaitlist==='1';
+ const obj={artist:artistInput.value.trim(),title:titleInput.value.trim(),bpm:Number(bpmInput.value||0),key:keyInput.value.trim(),bandKey:bandKeyInput.value.trim(),vocal:vocalInput.value||UNSPECIFIED_VOCAL,language:(window.languageInput?(languageInput.value==='PL'?'PL':'INNY'):'INNY'),status:editingWaitlist?(existing?.status||'⏳ Poczekalnia'):((editingId&&!isAdmin&&existing)?existing.status:statusInput.value),date:editingId?(existing?.date||today()):today(),yt:ytUrl.value.trim(),ytId:id,notes:notesInput.value.trim(),pendingDelete:editingId?(existing?.pendingDelete||false):false,updatedBy:userName,updatedUid:authUser.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
  if(!editingId&&songModal.dataset.waitlist==='1')obj.status='⏳ Poczekalnia';
  if((obj.status.includes('Gotowy')||obj.status.includes('Hit'))&&(!obj.bpm||(!obj.key&&!obj.bandKey))&&!confirm('Utwór jest oznaczony jako gotowy, ale brakuje BPM lub tonacji. Zapisać mimo to?'))return;
- if(obj.vocal&&!vocalNames.includes(obj.vocal)&&isAdmin){vocalNames.push(obj.vocal);await updateVocalists()}
+ if(obj.vocal&&obj.vocal!==UNSPECIFIED_VOCAL&&!vocalNames.includes(obj.vocal)&&isAdmin){vocalNames.push(obj.vocal);await updateVocalists()}
  if(editingId)await db.collection('songs').doc(editingId).update(obj);
  else{obj.addedBy=userName;obj.addedUid=authUser.uid;obj.createdAt=firebase.firestore.FieldValue.serverTimestamp();const ref=await db.collection('songs').add(obj);selectedId=ref.id}
  closeModal()
@@ -1449,11 +1477,11 @@ function renderWaitlist(){
 }
 function openWaitlistAdd(){
  if(!canUseWaitlist())return alert('Twoja rola nie pozwala dodawać propozycji.');
- editingId=null;statusInput.disabled=true;
+ editingId=null;statusInput.disabled=true;songModal.dataset.editingWaitlist='';songModal.dataset.returnToWaitlist='';
  modalTitle.textContent='Dodaj do Poczekalni';
  ytUrl.value=artistInput.value=titleInput.value=bpmInput.value=keyInput.value=bandKeyInput.value=notesInput.value='';if(window.languageInput)languageInput.value='INNY';
  refreshVocalSelects();
- vocalInput.value=vocalNames.find(v=>!inactiveVocalNames.includes(v))||'';
+ vocalInput.value=UNSPECIFIED_VOCAL;
  statusInput.value='🟡 W przygotowaniu';
  songModal.dataset.waitlist='1';
  waitlistModal.classList.remove('open');
