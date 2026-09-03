@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Pozorantsi Song Base — Band Click v9 JULY AUTHOR FIX</title>
+<title>Pozorantsi Song Base — Band Click v10 JULY AUTHORS</title>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preload" href="band-click-track-60.m4a" as="audio" type="audio/mp4">
@@ -816,7 +816,7 @@ function updateAdminUi(){
  if(window.vocalAdminGroup)vocalAdminGroup.style.display=isAdmin?'block':'none';
  if(window.mainAddBtn)mainAddBtn.style.display=isAdmin?'block':'none';
  if(window.waitlistBtn)waitlistBtn.style.display=canUseWaitlist()?'block':'none';
- if(window.waitlistJulyAuthorFixBtn)waitlistJulyAuthorFixBtn.style.display=isAdmin?'inline-block':'none';
+ if(window.waitlistJulyAuthorFixBtn)waitlistJulyAuthorFixBtn.style.display=isAdmin&&julyWaitlistAuthorFixCandidates().length?'inline-block':'none';
  if(window.setlistCreateGroup)setlistCreateGroup.style.display=canManageSetlists()?'grid':'none';
  if(window.setlistModalCreate)setlistModalCreate.style.display=canManageSetlists()?'grid':'none';
  if(window.setlistsHelp)setlistsHelp.textContent=canManageSetlists()?'Setlisty są wspólne i mogą być edytowane przez członków zespołu.':currentRole==='guest'?'Czasowy dostęp: cały repertuar i setlisty są dostępne tylko do odczytu.':'Setlisty są dostępne tylko do odczytu.';
@@ -1438,23 +1438,23 @@ function waitlistSongMonth(s){
  const pl=text.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);if(pl)return`${pl[3]}-${String(Number(pl[2])).padStart(2,'0')}`;
  const created=s&&s.createdAt&&typeof s.createdAt.toDate==='function'?s.createdAt.toDate():null;return created?`${created.getFullYear()}-${String(created.getMonth()+1).padStart(2,'0')}`:''
 }
-function julyWaitlistAuthorFixCandidates(){return songs.filter(s=>!s.pendingDelete&&String(s.status||'').includes('Poczekalnia')&&waitlistSongMonth(s)==='2026-07'&&String(s.addedBy||'').trim().toLocaleLowerCase('pl')==='marek')}
+function julyWaitlistAuthorFixCandidates(){return songs.filter(s=>{if(s.pendingDelete||!String(s.status||'').includes('Poczekalnia')||waitlistSongMonth(s)!=='2026-07')return false;const added=String(s.addedBy||'').trim().toLocaleLowerCase('pl'),updated=String(s.updatedBy||'').trim().toLocaleLowerCase('pl');return added==='marek'||(added==='łukasz'&&updated==='marek')})}
 async function fixJulyWaitlistAuthors(){
  if(!isAdmin)return alert('Tylko Marek / administrator.');const items=julyWaitlistAuthorFixCandidates();
- if(!items.length)return alert('Nie znaleziono w Poczekalni pozycji z lipca 2026 opisanych jako dodane przez Marka. Nic nie zostało zmienione.');
+ if(!items.length)return alert('Nie znaleziono lipcowych propozycji wymagających korekty autora. Nic nie zostało zmienione.');
  const titles=items.map((s,i)=>`${i+1}. ${s.artist||'—'} — ${s.title||'—'}`).join('\n');
- if(!confirm(`Znaleziono ${items.length} pozycji.\n\n${titles}\n\nZmienić WYŁĄCZNIE opis „Dodano przez” z Marek na Łukasz?`))return;
+ if(!confirm(`Znaleziono ${items.length} pozycji.\n\n${titles}\n\nUstawić „Dodano przez” oraz „ostatnio edytował” na Łukasz? Pozostałe dane nie zostaną zmienione.`))return;
  const button=document.getElementById('waitlistJulyAuthorFixBtn');if(button){button.disabled=true;button.textContent='Zapisywanie…'}
  try{
-   const batch=db.batch();for(const s of items)batch.update(db.collection('songs').doc(s.id),{addedBy:'Łukasz'});await batch.commit();
-   for(const s of items)s.addedBy='Łukasz';renderWaitlist();alert(`Gotowe. Zmieniono wyłącznie autora przy ${items.length} propozycjach z lipca 2026.`)
+   const batch=db.batch();for(const s of items)batch.update(db.collection('songs').doc(s.id),{addedBy:'Łukasz',updatedBy:'Łukasz'});await batch.commit();
+   for(const s of items){s.addedBy='Łukasz';s.updatedBy='Łukasz'}renderWaitlist();alert(`Gotowe. Ustawiono „Dodano przez” i „ostatnio edytował” na Łukasz przy ${items.length} propozycjach z lipca 2026.`)
  }catch(error){console.error('July waitlist author fix',error);alert('Nie udało się zapisać korekty. Operacja nie została wykonana.')}finally{if(button)button.disabled=false;renderWaitlist()}
 }
 function openWaitlistModal(){if(!canUseWaitlist())return alert('Poczekalnia nie jest dostępna dla tej roli.');waitlistModal.classList.add('open');renderWaitlist()}
 function renderWaitlist(){
  let items=songs.filter(s=>!s.pendingDelete&&String(s.status||'').includes('Poczekalnia'));
 
- const fixButton=document.getElementById('waitlistJulyAuthorFixBtn');if(fixButton){const count=julyWaitlistAuthorFixCandidates().length;fixButton.style.display=isAdmin?'inline-block':'none';fixButton.disabled=count===0;fixButton.textContent=count?`Popraw autorów z lipca (${count})`:'Autorzy z lipca poprawieni'}
+ const fixButton=document.getElementById('waitlistJulyAuthorFixBtn');if(fixButton){const count=julyWaitlistAuthorFixCandidates().length;fixButton.style.display=isAdmin&&count?'inline-block':'none';fixButton.disabled=false;fixButton.textContent=`Popraw autorów z lipca (${count})`}
 
  const users=getUserOptions().sort((a,b)=>a.localeCompare(b,'pl'));
  if(window.waitUserFilter){
