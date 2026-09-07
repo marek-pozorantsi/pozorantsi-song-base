@@ -20,7 +20,8 @@ service cloud.firestore {
         && exists(profilePath())
         && get(profilePath()).data.active == true
         && (
-          !get(profilePath()).data.keys().hasAny(['expiresAt'])
+          get(profilePath()).data.role == 'guest'
+          || !get(profilePath()).data.keys().hasAny(['expiresAt'])
           || get(profilePath()).data.expiresAt == null
           || request.time < get(profilePath()).data.expiresAt
         );

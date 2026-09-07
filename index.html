@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Pozorantsi Song Base — Band Click v10 JULY AUTHORS</title>
+<title>Pozorantsi Song Base — Band Click v11 GUEST UNLIMITED</title>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preload" href="band-click-track-60.m4a" as="audio" type="audio/mp4">
@@ -563,7 +563,7 @@ body.band-click-mode{overflow:hidden}
   <div class="profile-form">
     <label>UID konta Firebase</label><input id="profileUidInput" placeholder="Wklej UID użytkownika">
     <div class="profile-grid"><div><label>Imię</label><input id="profileNameInput" placeholder="np. Maciek"></div><div><label>Rola</label><select id="profileRoleInput" onchange="toggleGuestProfileFields()"><option value="member">Członek zespołu</option><option value="vocalist">Wokalistka</option><option value="guest">Gość</option></select></div></div>
-    <div id="guestProfileFields" style="display:none"><div class="guest-note">Gość zobaczy cały repertuar i setlisty, ale wyłącznie do odczytu. Nie ma dostępu do Poczekalni. Gdy data minie, reguły Firebase automatycznie zablokują dostęp.</div><div><label>Dostęp ważny do</label><input id="profileExpiryInput" type="date"></div></div>
+    <div id="guestProfileFields" style="display:none"><div class="guest-note">Gość zobaczy cały repertuar i setlisty, ale wyłącznie do odczytu. Nie ma dostępu do Poczekalni. Dostęp jest bezterminowy. Administrator może ręcznie zablokować konto.</div></div>
     <label class="profile-active"><input id="profileActiveInput" type="checkbox" checked> Konto aktywne</label>
     <div class="modal-actions"><button class="top-btn" onclick="clearProfileForm()">Wyczyść</button><button class="add-btn" style="padding:0 18px" onclick="saveProfile()">Zapisz profil</button></div>
   </div>
@@ -581,7 +581,7 @@ firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.fi
 const ADMIN_UID='ibXYNXnkluZFX4W0hddFoZ3TGa42';
 const GUEST_EMAIL='pozorantsi.gosc@gmail.com';
 const STATUS=['🔥 Hit koncertowy','🟢 Gotowy','🟡 W przygotowaniu','⚫ Archiwalny'];const KEYS=['C','Cm','D','Dm','Eb','Em','E','F','Fm','F#','G','Gm','Ab','Am','A','Bb','Bm','B'];
-let songs=[],vocalNames=[],inactiveVocalNames=[],appUsers=[],setlists=[],profiles=[],selectedId=null,currentSong=null,activeLetter='',activeStatus='Wszystkie',activeVocal='Wszyscy',editingId=null,userName='',isAdmin=false,authUser=null,currentProfile=null,currentRole='none',firebaseStarted=false,player=null,progressTimer=null,expiryTimer=null,profileUnsubscribe=null;
+let songs=[],vocalNames=[],inactiveVocalNames=[],appUsers=[],setlists=[],profiles=[],selectedId=null,currentSong=null,activeLetter='',activeStatus='Wszystkie',activeVocal='Wszyscy',editingId=null,userName='',isAdmin=false,authUser=null,currentProfile=null,currentRole='none',firebaseStarted=false,player=null,progressTimer=null,profileUnsubscribe=null;
 const ROLE_LABELS={admin:'ADMIN',member:'CZŁONEK ZESPOŁU',vocalist:'WOKAL',guest:'GOŚĆ'};
 const VALID_ROLES=['member','vocalist','guest'];
 const BAND_CLICK_MASTER_NAME='Paweł';
@@ -630,14 +630,12 @@ async function handleAuthState(u){
  localStorage.removeItem('pozorantsi_admin_unlocked');localStorage.removeItem('pozorantsi_user_name');
  authModal.classList.remove('open');logoutBtn.style.display='inline-block';
  updateAdminUi();syncStatus.textContent='Łączenie…';totalCount.textContent='Ładowanie bazy…';
- scheduleProfileExpiry();
  monitorCurrentProfile();
  await persistenceReady;
  if(!firebaseStarted){listenFirebase();setTimeout(seedIfEmpty,1500)}
 }
-function profileExpired(p){const d=p&&p.expiresAt&&typeof p.expiresAt.toDate==='function'?p.expiresAt.toDate():null;return !!(d&&d.getTime()<=Date.now())}
+function profileExpired(p){if(p?.role==='guest')return false;const d=p&&p.expiresAt&&typeof p.expiresAt.toDate==='function'?p.expiresAt.toDate():null;return !!(d&&d.getTime()<=Date.now())}
 async function rejectAuthenticatedUser(message){try{await auth.signOut()}catch{}setTimeout(()=>{authError.textContent=message;authModal.classList.add('open')},0)}
-function scheduleProfileExpiry(){clearTimeout(expiryTimer);if(currentRole!=='guest'||!currentProfile?.expiresAt?.toDate)return;const ms=currentProfile.expiresAt.toDate().getTime()-Date.now();if(ms<=0)return rejectAuthenticatedUser('Czasowy dostęp do aplikacji wygasł.');expiryTimer=setTimeout(()=>profileExpired(currentProfile)?rejectAuthenticatedUser('Czasowy dostęp do aplikacji wygasł.'):scheduleProfileExpiry(),Math.min(ms,2147480000))}
 function monitorCurrentProfile(){
  if(isAdmin||!authUser)return;if(profileUnsubscribe)profileUnsubscribe();
  profileUnsubscribe=db.collection('profiles').doc(authUser.uid).onSnapshot(snap=>{
@@ -646,7 +644,7 @@ function monitorCurrentProfile(){
    if(next.active!==true)return rejectAuthenticatedUser('Dostęp do tego konta został wyłączony przez administratora.');
    if(profileExpired(next))return rejectAuthenticatedUser('Czasowy dostęp do aplikacji wygasł.');
    const changed=currentRole!==next.role||userName!==String(next.displayName||'').trim()||JSON.stringify(currentProfile?.auditionSongIds||[])!==JSON.stringify(next.auditionSongIds||[]);
-   currentProfile=next;scheduleProfileExpiry();if(changed)location.reload()
+   currentProfile=next;if(changed)location.reload()
  },e=>console.error('Profile monitor',e))
 }
 async function loginUser(){
@@ -743,7 +741,7 @@ function openUserModal(){
  if(!authUser){authModal.classList.add('open');return}
  const label=ROLE_LABELS[currentRole]||currentRole;
  let extra='';
- if(currentRole==='guest'&&currentProfile?.expiresAt?.toDate)extra=`<br>Dostęp do całej bazy, tylko do odczytu.<br>Ważny do: <b>${esc(currentProfile.expiresAt.toDate().toLocaleDateString('pl-PL'))}</b>`;
+ if(currentRole==='guest')extra='<br>Dostęp do całej bazy, tylko do odczytu.<br><b>Dostęp bezterminowy</b>';
  profileSummary.innerHTML=`<b>${esc(userName)}</b><br>Rola: <b>${esc(label)}</b>${extra}`;
  userModal.classList.add('open');
 }
@@ -751,39 +749,23 @@ function openUserManagerModal(){if(!isAdmin){alert('Tylko Marek / administrator.
 function renderUserManager(){
  if(!window.profilesManager)return;
  profilesManager.innerHTML=profiles.map(p=>{
-   const exp=p.expiresAt&&p.expiresAt.toDate?p.expiresAt.toDate().toLocaleDateString('pl-PL'):'—';
-   return `<div class="profile-card"><div class="profile-card-head"><b>${esc(p.displayName||'Bez imienia')}</b><span>${p.active===true?'🟢 aktywny':'🔴 zablokowany'}</span></div><div class="profile-meta">${esc(ROLE_LABELS[p.role]||p.role||'brak roli')} · UID: ${esc(p.uid)}${p.role==='guest'?`<br>Pełna baza, tylko odczyt · ważny do: ${esc(exp)}`:''}</div><div class="profile-actions">${p.uid===ADMIN_UID?'':`${p.role==='guest'?`<button onclick="extendGuestAccess('${p.uid}',30)">+30 dni</button>`:''}<button onclick="editProfile('${p.uid}')">Edytuj</button><button onclick="toggleProfileActive('${p.uid}')">${p.active===true?'Zablokuj':'Aktywuj'}</button>`}</div></div>`
+   return `<div class="profile-card"><div class="profile-card-head"><b>${esc(p.displayName||'Bez imienia')}</b><span>${p.active===true?'🟢 aktywny':'🔴 zablokowany'}</span></div><div class="profile-meta">${esc(ROLE_LABELS[p.role]||p.role||'brak roli')} · UID: ${esc(p.uid)}${p.role==='guest'?`<br>Pełna baza, tylko odczyt · dostęp bezterminowy`:''}</div><div class="profile-actions">${p.uid===ADMIN_UID?'':`<button onclick="editProfile('${p.uid}')">Edytuj</button><button onclick="toggleProfileActive('${p.uid}')">${p.active===true?'Zablokuj':'Aktywuj'}</button>`}</div></div>`
  }).join('')||'<div class="admin-help">Brak profili. Profil administratora pojawi się automatycznie.</div>';
 }
-function defaultExpiryDate(){const d=new Date();d.setDate(d.getDate()+30);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
-function toggleGuestProfileFields(){const guest=profileRoleInput.value==='guest';guestProfileFields.style.display=guest?'block':'none';if(guest&&!profileExpiryInput.value)profileExpiryInput.value=defaultExpiryDate()}
-function clearProfileForm(){profileUidInput.value='';profileUidInput.disabled=false;profileNameInput.value='';profileRoleInput.value='member';profileExpiryInput.value='';profileActiveInput.checked=true;toggleGuestProfileFields()}
-function editProfile(uid){const p=profiles.find(x=>x.uid===uid);if(!p||uid===ADMIN_UID)return;profileUidInput.value=uid;profileUidInput.disabled=true;profileNameInput.value=p.displayName||'';profileRoleInput.value=VALID_ROLES.includes(p.role)?p.role:'member';profileActiveInput.checked=p.active===true;profileExpiryInput.value=p.expiresAt?.toDate?new Date(p.expiresAt.toDate().getTime()-p.expiresAt.toDate().getTimezoneOffset()*60000).toISOString().slice(0,10):'';toggleGuestProfileFields()}
+function toggleGuestProfileFields(){const guest=profileRoleInput.value==='guest';guestProfileFields.style.display=guest?'block':'none'}
+function clearProfileForm(){profileUidInput.value='';profileUidInput.disabled=false;profileNameInput.value='';profileRoleInput.value='member';profileActiveInput.checked=true;toggleGuestProfileFields()}
+function editProfile(uid){const p=profiles.find(x=>x.uid===uid);if(!p||uid===ADMIN_UID)return;profileUidInput.value=uid;profileUidInput.disabled=true;profileNameInput.value=p.displayName||'';profileRoleInput.value=VALID_ROLES.includes(p.role)?p.role:'member';profileActiveInput.checked=p.active===true;toggleGuestProfileFields()}
 async function saveProfile(){
  if(!isAdmin)return alert('Tylko administrator.');
  const uid=profileUidInput.value.trim(),displayName=profileNameInput.value.trim(),role=profileRoleInput.value;
  if(!/^[A-Za-z0-9_-]{10,128}$/.test(uid))return alert('Wklej prawidłowy UID konta z Firebase Authentication.');
  if(!displayName)return alert('Wpisz imię użytkownika.');if(!VALID_ROLES.includes(role))return alert('Wybierz prawidłową rolę.');
  const data={displayName,role,active:profileActiveInput.checked,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
- if(role==='guest'){
-   const date=profileExpiryInput.value;
-   if(!date)return alert('Ustaw datę wygaśnięcia dostępu.');
-   if(date<defaultExpiryDate())return alert(`Dostęp gościa musi obejmować co najmniej 30 dni. Ustaw datę ${new Date((defaultExpiryDate())+'T12:00:00').toLocaleDateString('pl-PL')} lub późniejszą.`);
-   data.expiresAt=firebase.firestore.Timestamp.fromDate(new Date(date+'T23:59:59'));data.auditionSetlistId='';data.auditionTitle='';data.auditionSongIds=[];
- }else{data.expiresAt=null;data.auditionSetlistId='';data.auditionTitle='';data.auditionSongIds=[]}
+ data.expiresAt=null;data.auditionSetlistId='';data.auditionTitle='';data.auditionSongIds=[];
  if(!profiles.some(p=>p.uid===uid))data.createdAt=firebase.firestore.FieldValue.serverTimestamp();
  await db.collection('profiles').doc(uid).set(data,{merge:true});clearProfileForm();alert('Profil został zapisany.')
 }
 async function toggleProfileActive(uid){if(!isAdmin||uid===ADMIN_UID)return;const p=profiles.find(x=>x.uid===uid);if(!p)return;const next=p.active!==true;if(!confirm(`${next?'Aktywować':'Zablokować'} dostęp użytkownika ${p.displayName}?`))return;await db.collection('profiles').doc(uid).update({active:next,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}
-async function extendGuestAccess(uid,days=30){
- if(!isAdmin)return alert('Tylko administrator.');
- const p=profiles.find(x=>x.uid===uid);if(!p||p.role!=='guest')return alert('Nie znaleziono profilu gościa.');
- const current=p.expiresAt?.toDate?p.expiresAt.toDate():null;
- const base=current&&current.getTime()>Date.now()?current:new Date();
- const expiresAt=new Date(base);expiresAt.setDate(expiresAt.getDate()+Number(days||30));expiresAt.setHours(23,59,59,999);
- await db.collection('profiles').doc(uid).set({active:true,expiresAt:firebase.firestore.Timestamp.fromDate(expiresAt),updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
- alert(`Dostęp gościa został przedłużony do ${expiresAt.toLocaleDateString('pl-PL')}.`)
-}
 
 
 function showAdminMenu(){
@@ -819,7 +801,7 @@ function updateAdminUi(){
  if(window.waitlistJulyAuthorFixBtn)waitlistJulyAuthorFixBtn.style.display=isAdmin&&julyWaitlistAuthorFixCandidates().length?'inline-block':'none';
  if(window.setlistCreateGroup)setlistCreateGroup.style.display=canManageSetlists()?'grid':'none';
  if(window.setlistModalCreate)setlistModalCreate.style.display=canManageSetlists()?'grid':'none';
- if(window.setlistsHelp)setlistsHelp.textContent=canManageSetlists()?'Setlisty są wspólne i mogą być edytowane przez członków zespołu.':currentRole==='guest'?'Czasowy dostęp: cały repertuar i setlisty są dostępne tylko do odczytu.':'Setlisty są dostępne tylko do odczytu.';
+ if(window.setlistsHelp)setlistsHelp.textContent=canManageSetlists()?'Setlisty są wspólne i mogą być edytowane przez członków zespołu.':currentRole==='guest'?'Dostęp bezterminowy: cały repertuar i setlisty są dostępne tylko do odczytu.':'Setlisty są dostępne tylko do odczytu.';
  if(window.userLabel)userLabel.textContent=userName||'—';
  updateBandClickUi();
 }
@@ -1661,7 +1643,7 @@ async function importData(e){
    for(const s of songs)if(!songIds.has(s.id))ops.push({type:'delete',ref:db.collection('songs').doc(s.id)});
    for(const set of importedSetlists){const{id,...data}=set;ops.push({type:'set',ref:db.collection('setlists').doc(id),data})}
    for(const set of setlists)if(!setlistIds.has(set.id))ops.push({type:'delete',ref:db.collection('setlists').doc(set.id)});
-   for(const p of importedProfiles){const{uid,...raw}=p;const data={...raw,expiresAt:restoreExpiry(raw.expiresAt)};if(uid===ADMIN_UID){data.displayName='Marek';data.role='admin';data.active=true}ops.push({type:'set',ref:db.collection('profiles').doc(uid),data})}
+   for(const p of importedProfiles){const{uid,...raw}=p;const data={...raw,expiresAt:raw.role==='guest'?null:restoreExpiry(raw.expiresAt)};if(uid===ADMIN_UID){data.displayName='Marek';data.role='admin';data.active=true}ops.push({type:'set',ref:db.collection('profiles').doc(uid),data})}
    for(const p of profiles)if(p.uid!==ADMIN_UID&&!profileIds.has(p.uid))ops.push({type:'delete',ref:db.collection('profiles').doc(p.uid)});
    await commitOperations(ops);
    await db.collection('settings').doc('main').set({vocalists:importedVocalists,inactiveVocalists:importedInactive,appUsers:importedUsers,restoredBy:userName,restoredAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
