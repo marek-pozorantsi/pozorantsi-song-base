@@ -1381,7 +1381,7 @@ function renderSetlists(){
     ${editable?`<div class="setlist-add-row">
       <select id="addSong_${s.id}" class="filter-select">${options}</select>
       <button class="top-btn" onclick="addSelectedSongToSetlist('${s.id}')">Dodaj</button>
-    </div></div>`''}
+    </div>`:''}
    </div></div>`
  }).join('')||'<div style="color:var(--m);font-size:13px">Brak setlist.</div>'
 }
