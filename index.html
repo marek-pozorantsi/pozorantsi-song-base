@@ -1350,7 +1350,7 @@ function renderSetlists(){
  setlistsList.innerHTML=h;
  setlistsModalList.innerHTML=setlists.map(s=>{
    const open=expandedSetlistId===s.id;
-   if(!open)return `<div class="setlist-concert"><button type="button" class="setlist-toggle" aria-expanded="true" onclick="toggleSetlist('${s.id}')"><strong>${esc(s.name)}</strong><span>${(s.songs||[]).length} utw. ▲</span></button><div class="setlist-body"><button type="button" class="setlist-toggle" aria-expanded="true" onclick="toggleSetlist('${s.id}')"><strong>${esc(s.name)}</strong><span>${(s.songs||[]).length} utw. ▲</span></button><div class="setlist-body"><button type="button" class="setlist-toggle" aria-expanded="false" onclick="toggleSetlist('${s.id}')"><strong>${esc(s.name)}</strong><span>${(s.songs||[]).length} utw. ▼</span></button></div>`;
+   if(!open)return `<div class="setlist-concert"><button type="button" class="setlist-toggle" aria-expanded="false" onclick="toggleSetlist('${s.id}')"><strong>${esc(s.name)}</strong><span>${(s.songs||[]).length} utw. ▼</span></button></div>`;
   const editable=canManageSetlists()&&!s.guest;
   const rows=(s.songs||[]).map((id,idx)=>{
    const song=songs.find(x=>x.id===id);
@@ -1370,7 +1370,7 @@ function renderSetlists(){
    </div>`:''
   }).join('')||'<div class="empty-setlist">Setlista pusta.</div>';
   const options=songs.filter(x=>!x.pendingDelete&&!String(x.status||'').includes('Archiwalny')&&!String(x.status||'').includes('Poczekalnia')).map(song=>`<option value="${song.id}">${esc(song.artist)} — ${esc(song.title)}</option>`).join('');
-  return `<div class="setlist-concert">
+  return `<div class="setlist-concert"><button type="button" class="setlist-toggle" aria-expanded="true" onclick="toggleSetlist('${s.id}')"><strong>${esc(s.name)}</strong><span>${(s.songs||[]).length} utw. ▲</span></button><div class="setlist-body">
     <div class="setlist-concert-head">
       <input value="${escAttr(s.name)}" ${editable?`onchange="renameSetlist('${s.id}',this.value)"`:'readonly'} style="width:55%;background:#040a12eb;color:var(--t);border:1px solid var(--b);border-radius:8px;padding:10px;font-size:18px;font-weight:900">
       ${editable?`<button class="setlist-print-btn" onclick="saveSetlistNotice('${s.id}')">Zapisz</button>`:''}
@@ -1381,7 +1381,7 @@ function renderSetlists(){
     ${editable?`<div class="setlist-add-row">
       <select id="addSong_${s.id}" class="filter-select">${options}</select>
       <button class="top-btn" onclick="addSelectedSongToSetlist('${s.id}')">Dodaj</button>
-    </div>`:''}
+    </div></div>`''}
    </div></div>`
  }).join('')||'<div style="color:var(--m);font-size:13px">Brak setlist.</div>'
 }
