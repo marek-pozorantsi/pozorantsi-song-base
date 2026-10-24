@@ -464,6 +464,7 @@ body.band-click-mode{overflow:hidden}
 #setlistsModal .setlist-actions button{width:34px!important;min-width:34px;height:34px!important;min-height:34px}
 #setlistsModal .setlist-concert-head input{flex-basis:100%;font-size:15px!important}
 }
+.setlist-patches{font-size:12px;color:#b9c7d7;margin-top:5px}.setlist-vocal-item{white-space:nowrap}.setlist-vocal-remove{border:1px solid #b55;border-radius:50%;background:#4e1a23;color:white;font-weight:900;cursor:pointer;margin-left:5px}.setlist-concert-song{grid-template-columns:44px minmax(0,1fr) 86px 120px auto}
 </style>
 </head>
 <body>
@@ -1362,7 +1363,7 @@ function renderSetlists(){
     <div class="setlist-no">${idx+1}</div>
     <div>
       <div class="setlist-song-main">${esc(song.title)}</div>
-      <div class="setlist-song-artist">${esc(song.artist)} / <span class="setlist-vocal">${esc(song.vocal||'-')}</span></div>
+      <div class="setlist-song-artist">${esc(song.artist)} / <span class="setlist-vocal">${setlistVisibleVocals(s,song).map(v=>'<span class="setlist-vocal-item">'+esc(v)+(editable&&song.vocalAlt?'<button class="setlist-vocal-remove" title="Usuń tego wokalistę z tej setlisty" onclick="event.stopPropagation();toggleSetlistVocal(\''+s.id+'\',\''+id+'\',\''+escAttr(v)+'\')">×</button>':'')+'</span>').join(' / ')||'-'}</span></div><div class="setlist-patches">ROLAND: <b>${esc(song.roland||'-')}</b> &nbsp; KORG: <b>${esc(song.korg||'-')}</b></div>
     </div>
     <div class="setlist-bpm">${esc(song.bpm||'-')}<span>BPM</span></div>
     <div class="setlist-key">${esc(song.bandKey||song.key||'-')}<span>TONACJA</span></div>
@@ -1389,6 +1390,17 @@ function renderSetlists(){
    </div></div>`
  }).join('')||'<div style="color:var(--m);font-size:13px">Brak setlist.</div>'
 }
+function setlistVisibleVocals(set,song){const all=[song.vocal,song.vocalAlt].filter((v,i,a)=>v&&a.indexOf(v)===i);const exclude=(set.vocalExcluded||{})[song.id]||[];return all.filter(v=>!exclude.includes(v))}
+async function toggleSetlistVocal(setId,songId,vocal){
+ if(!requireSetlistEdit())return;
+ const set=setlists.find(x=>x.id===setId),song=songs.find(x=>x.id===songId);if(!set||!song)return;
+ const excluded={...(set.vocalExcluded||{})},current=excluded[songId]||[];
+ if(current.includes(vocal))excluded[songId]=current.filter(v=>v!==vocal);
+ else if(setlistVisibleVocals(set,song).length>1)excluded[songId]=[...current,vocal];
+ else return;
+ set.vocalExcluded=excluded;renderSetlists();
+ await db.collection('setlists').doc(setId).update({vocalExcluded:excluded,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+}
 function saveSetlistNotice(setId){alert('Setlista jest zapisana w Firebase.')}
 function printSetlist(setId){
  const set=setlists.find(s=>s.id===setId);if(!set)return;
@@ -1409,14 +1421,14 @@ function printSetlist(setId){
     <div class="print-line1-v50">
       <div class="print-no-v50">${no}</div>
       <div class="print-title-v50">${esc(song.title||'')}</div>
-      <div class="print-vocal-v50">🎤 ${esc(song.vocal||'-')}</div>
+      <div class="print-vocal-v50">🎤 ${esc(setlistVisibleVocals(set,song).join(" / ")||"-")}</div>
       <div class="print-bpm-v50">${bpmText}</div>
     </div>
     <div class="print-line2-v50">
       <div></div>
       <div class="print-artist-v50">${esc(song.artist||'')}</div>
       <div></div>
-      <div class="print-key-v50">${key}</div>
+      <div class="print-key-v50">${key}<div style="font-size:8pt">ROLAND: ${esc(song.roland||"-")} / KORG: ${esc(song.korg||"-")}</div></div>
     </div>
   </div>`;
  }).join('');
