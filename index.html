@@ -490,6 +490,13 @@ body.band-click-mode{overflow:hidden}
 .piano-view .piano-sounds{display:flex;align-items:center;flex-wrap:wrap;column-gap:42px!important;row-gap:5px;font-size:14px;margin-top:12px}
 .piano-view .drum-tempo{align-self:center}
 @media(max-width:600px){.piano-view .drum-row.piano-song-row{gap:12px!important}.piano-view .piano-sounds{column-gap:28px!important;font-size:12px}}
+/* Piano: full-width second line below main DRUM row, including on iPhone */
+.piano-view .drum-row.piano-song-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;column-gap:14px!important;row-gap:0!important}
+.piano-view .piano-song-main{grid-column:1!important;grid-row:1!important;min-width:0}
+.piano-view .piano-song-row>.drum-tempo{grid-column:2!important;grid-row:1!important;align-self:center}
+.piano-view .piano-song-row>.piano-sounds{grid-column:1 / -1!important;grid-row:2!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:16px!important;min-width:0;width:100%;margin-top:14px!important;font-size:14px!important;line-height:1.5}
+.piano-view .piano-sounds span{white-space:nowrap;min-width:0}
+@media(max-width:600px){.piano-view .piano-song-row>.piano-sounds{gap:22px!important;font-size:13px!important}}
 </style>
 </head>
 <body>
@@ -945,9 +952,9 @@ function renderPianoList(){
  <div class="piano-song-main">
   <div class="drum-title">${esc(s.title||'-')}</div>
   <div class="drum-artist">${esc(s.artist||'-')}</div>
-  <div class="piano-sounds"><span>ROLAND: <b>${esc(s.roland||'-')}</b></span><span>KORG: <b>${esc(s.korg||'-')}</b></span></div>
  </div>
  <div class="drum-tempo">${esc(s.bpm||'-')}<span>BPM</span></div>
+ <div class="piano-sounds"><span>ROLAND: <b>${esc(s.roland||'-')}</b></span><span>KORG: <b>${esc(s.korg||'-')}</b></span></div>
  </div>`).join('')||'<div class="drum-empty">Brak pasujących utworów.</div>';
 }
 function openPianoView(){if(!authUser||currentRole==='none')return;closeDrumView();const v=document.getElementById('pianoView');document.body.classList.add('piano-mode');v.classList.add('open');v.setAttribute('aria-hidden','false');renderPianoList()}
