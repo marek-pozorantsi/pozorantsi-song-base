@@ -497,6 +497,17 @@ body.band-click-mode{overflow:hidden}
 .piano-view .piano-song-row>.piano-sounds{grid-column:1 / -1!important;grid-row:2!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:16px!important;min-width:0;width:100%;margin-top:14px!important;font-size:14px!important;line-height:1.5}
 .piano-view .piano-sounds span{white-space:nowrap;min-width:0}
 @media(max-width:600px){.piano-view .piano-song-row>.piano-sounds{gap:22px!important;font-size:13px!important}}
+/* Final mobile piano fix: two independent full-width columns, no inline collapse */
+#pianoList .piano-song-row>.piano-sounds{
+ grid-column:1 / -1!important;grid-row:2!important;
+ display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+ width:100%!important;gap:0!important;margin:14px 0 0!important;
+ padding:0 8px 2px!important;box-sizing:border-box!important;
+ font-size:14px!important;text-align:left!important;
+}
+#pianoList .piano-sounds>.piano-roland{display:block!important;grid-column:1!important;justify-self:start!important;padding-right:12px!important;white-space:nowrap}
+#pianoList .piano-sounds>.piano-korg{display:block!important;grid-column:2!important;justify-self:start!important;padding-left:22px!important;white-space:nowrap}
+@media(max-width:390px){#pianoList .piano-song-row>.piano-sounds{font-size:12px!important}#pianoList .piano-sounds>.piano-korg{padding-left:14px!important}}
 </style>
 </head>
 <body>
@@ -954,7 +965,7 @@ function renderPianoList(){
   <div class="drum-artist">${esc(s.artist||'-')}</div>
  </div>
  <div class="drum-tempo">${esc(s.bpm||'-')}<span>BPM</span></div>
- <div class="piano-sounds"><span>ROLAND: <b>${esc(s.roland||'-')}</b></span><span>KORG: <b>${esc(s.korg||'-')}</b></span></div>
+ <div class="piano-sounds"><div class="piano-roland">ROLAND: <b>${esc(s.roland||'-')}</b></div><div class="piano-korg">KORG: <b>${esc(s.korg||'-')}</b></div></div>
  </div>`).join('')||'<div class="drum-empty">Brak pasujących utworów.</div>';
 }
 function openPianoView(){if(!authUser||currentRole==='none')return;closeDrumView();const v=document.getElementById('pianoView');document.body.classList.add('piano-mode');v.classList.add('open');v.setAttribute('aria-hidden','false');renderPianoList()}
