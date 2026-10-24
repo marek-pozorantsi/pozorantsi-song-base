@@ -485,6 +485,11 @@ body.band-click-mode{overflow:hidden}
 .piano-view .piano-sounds{display:flex;flex-wrap:wrap;gap:5px 24px;margin-top:10px;color:#b4c4d7;font-size:15px;font-weight:650;line-height:1.35}
 .piano-view .piano-sounds b{color:#f4f7fb;font-weight:850}
 @media(max-width:900px){.piano-view .piano-sounds{font-size:13px;gap:4px 16px;margin-top:9px}}
+/* PIANO mirrors DRUM two-column row; instrument line only adds below artist */
+.piano-view .drum-row.piano-song-row{grid-template-columns:minmax(0,1fr) auto!important;gap:18px!important}
+.piano-view .piano-sounds{display:flex;align-items:center;flex-wrap:wrap;column-gap:42px!important;row-gap:5px;font-size:14px;margin-top:12px}
+.piano-view .drum-tempo{align-self:center}
+@media(max-width:600px){.piano-view .drum-row.piano-song-row{gap:12px!important}.piano-view .piano-sounds{column-gap:28px!important;font-size:12px}}
 </style>
 </head>
 <body>
@@ -935,10 +940,15 @@ function closeDrumView(){
 function renderPianoList(){
  const node=document.getElementById('pianoList');if(!node)return;
  const q=(document.getElementById('pianoSearch').value||'').toLocaleLowerCase('pl').trim();
- const list=songs.filter(s=>!s.pendingDelete&&!String(s.status||'').includes('Poczekalnia')&&!String(s.status||'').includes('Archiwalny'))
-  .filter(s=>!q||(String(s.title||'')+' '+String(s.artist||'')).toLocaleLowerCase('pl').includes(q))
-  .sort((a,b)=>(String(a.artist||'')+String(a.title||'')).localeCompare(String(b.artist||'')+String(b.title||''),'pl'));
- node.innerHTML=list.map(s=>`<div class="drum-row piano-song-row"><div class="piano-song-main"><div class="drum-title">${esc(s.title||'-')}</div><div class="drum-artist">${esc(s.artist||'-')}</div><div class="piano-sounds"><span>ROLAND: <b>${esc(s.roland||'-')}</b></span><span>KORG: <b>${esc(s.korg||'-')}</b></span></div></div></div>`).join('')||'<div class="drum-empty">Brak pasujących utworów.</div>';
+ const list=drumSongs().filter(s=>!q||(String(s.title||'')+' '+String(s.artist||'')).toLocaleLowerCase('pl').includes(q));
+ node.innerHTML=list.map(s=>`<div class="drum-row piano-song-row">
+ <div class="piano-song-main">
+  <div class="drum-title">${esc(s.title||'-')}</div>
+  <div class="drum-artist">${esc(s.artist||'-')}</div>
+  <div class="piano-sounds"><span>ROLAND: <b>${esc(s.roland||'-')}</b></span><span>KORG: <b>${esc(s.korg||'-')}</b></span></div>
+ </div>
+ <div class="drum-tempo">${esc(s.bpm||'-')}<span>BPM</span></div>
+ </div>`).join('')||'<div class="drum-empty">Brak pasujących utworów.</div>';
 }
 function openPianoView(){if(!authUser||currentRole==='none')return;closeDrumView();const v=document.getElementById('pianoView');document.body.classList.add('piano-mode');v.classList.add('open');v.setAttribute('aria-hidden','false');renderPianoList()}
 function closePianoView(){const v=document.getElementById('pianoView');document.body.classList.remove('piano-mode');v.classList.remove('open');v.setAttribute('aria-hidden','true')}
