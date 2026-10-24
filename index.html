@@ -465,6 +465,20 @@ body.band-click-mode{overflow:hidden}
 #setlistsModal .setlist-concert-head input{flex-basis:100%;font-size:15px!important}
 }
 .setlist-patches{font-size:12px;color:#b9c7d7;margin-top:5px}.setlist-vocal-item{white-space:nowrap}.setlist-vocal-remove{border:1px solid #b55;border-radius:50%;background:#4e1a23;color:white;font-weight:900;cursor:pointer;margin-left:5px}.setlist-concert-song{grid-template-columns:44px minmax(0,1fr) 86px 120px auto}
+/* Mobile launcher: three separate, non-overlapping controls */
+@media(max-width:900px){
+ header .top-stats{grid-column:1 / -1!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;width:100%;min-width:0}
+ header .top-stats #bandClickLaunchBtn,
+ header .top-stats #pianoLaunchBtn,
+ header .top-stats #drumLaunchBtn{position:static!important;top:auto!important;right:auto!important;left:auto!important;z-index:auto!important;grid-row:2;min-width:0!important;width:100%;height:38px;min-height:38px!important;padding:0 4px!important;text-align:center;font-size:12px!important;letter-spacing:0!important;white-space:nowrap}
+ header .top-stats #bandClickLaunchBtn{grid-column:1}
+ header .top-stats #pianoLaunchBtn{grid-column:2}
+ header .top-stats #drumLaunchBtn{grid-column:3}
+ header .top-stats #totalCount{grid-column:2;grid-row:1;font-size:12px;align-self:center}
+ header .top-stats #syncStatus{grid-column:3;grid-row:1;font-size:10px;padding:5px;justify-self:end}
+ header .top-stats>span:first-child{grid-column:1;grid-row:1}
+ header .top-stats #roleBadge{grid-column:1 / -1;grid-row:3;justify-self:start}
+}
 </style>
 </head>
 <body>
