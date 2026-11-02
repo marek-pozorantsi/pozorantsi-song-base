@@ -513,6 +513,22 @@ body.band-click-mode{overflow:hidden}
   .print-patches-v50 b{font-weight:700!important}
   .print-patches-v50 .print-patches-gap{display:inline-block!important;margin-left:7mm!important;max-width:100%!important;overflow-wrap:anywhere!important}
 }
+
+/* Setlista: rozdzielone pola ROLAND/KORG wykorzystuja cala dostepna szerokosc */
+#setlistsModal .setlist-concert-song>.setlist-patches{
+  grid-column:2 / -1!important;grid-row:2!important;min-width:0;width:100%;
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  column-gap:18px;row-gap:5px;margin-top:6px;padding-top:6px;
+  border-top:1px solid rgba(255,255,255,.1);font-size:12px;line-height:1.4;
+}
+#setlistsModal .setlist-patch-entry{display:flex;flex-wrap:wrap;gap:0 6px;min-width:0;align-items:baseline}
+#setlistsModal .setlist-patch-label{color:#b9c7d7;font-weight:800;white-space:nowrap}
+#setlistsModal .setlist-patch-entry b{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;word-break:break-word;color:#eef4ff;font-weight:750}
+@media(max-width:620px){
+  #setlistsModal .setlist-concert-song>.setlist-patches{
+    grid-template-columns:minmax(0,1fr)!important;row-gap:5px;
+  }
+}
 </style>
 </head>
 <body>
@@ -1423,7 +1439,7 @@ function renderSetlists(){
     <div class="setlist-no">${idx+1}</div>
     <div>
       <div class="setlist-song-main">${esc(song.title)}</div>
-      <div class="setlist-song-artist">${esc(song.artist)} / <span class="setlist-vocal">${setlistVisibleVocals(s,song).map(v=>'<span class="setlist-vocal-item">'+esc(v)+(editable&&song.vocalAlt?'<button class="setlist-vocal-remove" title="Usuń tego wokalistę z tej setlisty" onclick="event.stopPropagation();toggleSetlistVocal(\''+s.id+'\',\''+id+'\',\''+escAttr(v)+'\')">×</button>':'')+'</span>').join(' / ')||'-'}</span></div><div class="setlist-patches">ROLAND: <b>${esc(song.roland||'-')}</b> &nbsp; KORG: <b>${esc(song.korg||'-')}</b></div>
+      <div class="setlist-song-artist">${esc(song.artist)} / <span class="setlist-vocal">${setlistVisibleVocals(s,song).map(v=>'<span class="setlist-vocal-item">'+esc(v)+(editable&&song.vocalAlt?'<button class="setlist-vocal-remove" title="Usuń tego wokalistę z tej setlisty" onclick="event.stopPropagation();toggleSetlistVocal(\''+s.id+'\',\''+id+'\',\''+escAttr(v)+'\')">×</button>':'')+'</span>').join(' / ')||'-'}</span></div>
     </div>
     <div class="setlist-bpm">${esc(song.bpm||'-')}<span>BPM</span></div>
     <div class="setlist-key">${esc(song.bandKey||song.key||'-')}<span>TONACJA</span></div>
@@ -1432,6 +1448,10 @@ function renderSetlists(){
       <button title="Niżej" onclick="moveSongInSetlist('${s.id}','${id}',1)">↓</button>
       <button class="danger" title="Usuń" onclick="removeSongFromSetlist('${s.id}','${id}')">×</button>
     </div>`:''}
+    <div class="setlist-patches">
+      <div class="setlist-patch-entry"><span class="setlist-patch-label">ROLAND:</span><b>${esc(song.roland||'-')}</b></div>
+      <div class="setlist-patch-entry"><span class="setlist-patch-label">KORG:</span><b>${esc(song.korg||'-')}</b></div>
+    </div>
    </div>`:''
   }).join('')||'<div class="empty-setlist">Setlista pusta.</div>';
   const options=songs.filter(x=>!x.pendingDelete&&!String(x.status||'').includes('Archiwalny')&&!String(x.status||'').includes('Poczekalnia')).map(song=>`<option value="${song.id}">${esc(song.artist)} — ${esc(song.title)}</option>`).join('');
