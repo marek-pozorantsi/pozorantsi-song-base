@@ -40,8 +40,13 @@ service cloud.firestore {
       return hasRole('vocalist');
     }
 
+    function isAnonymousGuest() {
+      return signedIn()
+        && request.auth.token.firebase.sign_in_provider == 'anonymous';
+    }
+
     function isGuest() {
-      return hasRole('guest');
+      return isAnonymousGuest() || hasRole('guest');
     }
 
     function canUseBandClick() {
