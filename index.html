@@ -655,7 +655,7 @@ body.band-click-mode{overflow:hidden}
   </div>
 </section>
 <button id="playerToggleBtn" class="player-toggle" onclick="togglePlayerBar()">Schowaj player</button>
-<div class="modal auth-gate open" id="authModal"><div class="modal-box" style="width:460px"><h2>Logowanie do Song Base</h2><p class="admin-help">Członkowie zespołu i wokalistki logują się swoim adresem e-mail.</p><label>Adres e-mail</label><input id="authEmailInput" type="email" autocomplete="username" placeholder="E-mail"><label>Hasło</label><input id="authPasswordInput" type="password" autocomplete="current-password" placeholder="Hasło" onkeydown="if(event.key==='Enter')loginUser()"><div id="authError" class="auth-error"></div><div class="modal-actions"><button class="top-btn" onclick="sendPasswordReset()">Nie pamiętam hasła</button><button class="add-btn" id="loginBtn" style="padding:0 18px" onclick="loginUser()">Zaloguj</button></div><div class="guest-login-box"><div class="guest-login-title">Dostęp dla gościa</div><p class="guest-login-help">Wpisz wyłącznie otrzymane hasło. Adres techniczny zostanie użyty automatycznie.</p><div class="guest-login-actions"><input id="guestPasswordInput" type="password" autocomplete="current-password" placeholder="Hasło gościa" onkeydown="if(event.key==='Enter')loginGuest()"><button class="wait-btn" id="guestLoginBtn" onclick="loginGuest()">Wejdź jako gość</button></div></div></div></div>
+<div class="modal auth-gate open" id="authModal"><div class="modal-box" style="width:460px"><h2>Logowanie do Song Base</h2><p class="admin-help">Członkowie zespołu i wokalistki logują się swoim adresem e-mail.</p><label>Adres e-mail</label><input id="authEmailInput" type="email" autocomplete="username" placeholder="E-mail"><label>Hasło</label><input id="authPasswordInput" type="password" autocomplete="current-password" placeholder="Hasło" onkeydown="if(event.key==='Enter')loginUser()"><div id="authError" class="auth-error"></div><div class="modal-actions"><button class="top-btn" onclick="sendPasswordReset()">Nie pamiętam hasła</button><button class="add-btn" id="loginBtn" style="padding:0 18px" onclick="loginUser()">Zaloguj</button></div><div class="guest-login-box"><div class="guest-login-title">Dostęp dla gościa</div><p class="guest-login-help">Każdy, kto ma ten link, może przeglądać bazę utworów i setlisty oraz odtwarzać utwory. Konto gościa nie pozwala niczego edytować.</p><div class="guest-login-actions"><button class="wait-btn" id="guestLoginBtn" onclick="loginGuest()">Wejdź jako gość</button></div></div></div></div>
 <div class="modal" id="userModal"><div class="modal-box" style="width:430px"><h2>Profil użytkownika</h2><p class="admin-help" id="profileSummary">Imię i rola są przypisane do konta przez administratora.</p><div class="modal-actions"><button class="top-btn" onclick="userModal.classList.remove('open')">Zamknij</button></div></div></div>
 <button id="adminDot" class="admin-dot" onclick="openUserManagerModal()" title="Użytkownicy"></button>
 <div class="modal" id="userManagerModal"><div class="modal-box" style="width:680px"><h2>Administracja</h2>
@@ -685,7 +685,7 @@ body.band-click-mode{overflow:hidden}
 const firebaseConfig={apiKey:"AIzaSyBGhOE6PCoSZVKv7WBZ_7o-izkaV3HZ5Yk",authDomain:"pozorantsi-song-base.firebaseapp.com",projectId:"pozorantsi-song-base",storageBucket:"pozorantsi-song-base.firebasestorage.app",messagingSenderId:"365681981895",appId:"1:365681981895:web:ac5042a6480ef8ef2641e2"};
 firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.firestore();
 const ADMIN_UID='ibXYNXnkluZFX4W0hddFoZ3TGa42';
-const GUEST_EMAIL='pozorantsi.gosc@gmail.com';
+
 const STATUS=['🔥 Hit koncertowy','🟢 Gotowy','🟡 W przygotowaniu','⚫ Archiwalny'];const KEYS=['C','Cm','D','Dm','Eb','Em','E','F','Fm','F#','G','Gm','Ab','Am','A','Bb','Bm','B'];
 let songs=[],vocalNames=[],inactiveVocalNames=[],appUsers=[],setlists=[],profiles=[],selectedId=null,currentSong=null,activeLetter='',activeStatus='Wszystkie',activeVocal='Wszyscy',editingId=null,userName='',isAdmin=false,authUser=null,currentProfile=null,currentRole='none',firebaseStarted=false,player=null,progressTimer=null,profileUnsubscribe=null;
 const ROLE_LABELS={admin:'ADMIN',member:'CZŁONEK ZESPOŁU',vocalist:'WOKAL',guest:'GOŚĆ'};
@@ -717,7 +717,10 @@ async function handleAuthState(u){
  }
  isAdmin=authUser.uid===ADMIN_UID;
  try{
-   if(isAdmin){
+   if(authUser.isAnonymous){
+     isAdmin=false;currentRole='guest';userName='Gość';
+     currentProfile={uid:authUser.uid,displayName:'Gość',role:'guest',active:true,anonymous:true};
+   }else if(isAdmin){
      currentRole='admin';userName='Marek';currentProfile={uid:authUser.uid,displayName:'Marek',role:'admin',active:true};
      await db.collection('profiles').doc(authUser.uid).set({displayName:'Marek',role:'admin',active:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})
    }else{
@@ -743,7 +746,7 @@ async function handleAuthState(u){
 function profileExpired(p){if(p?.role==='guest')return false;const d=p&&p.expiresAt&&typeof p.expiresAt.toDate==='function'?p.expiresAt.toDate():null;return !!(d&&d.getTime()<=Date.now())}
 async function rejectAuthenticatedUser(message){try{await auth.signOut()}catch{}setTimeout(()=>{authError.textContent=message;authModal.classList.add('open')},0)}
 function monitorCurrentProfile(){
- if(isAdmin||!authUser)return;if(profileUnsubscribe)profileUnsubscribe();
+ if(isAdmin||!authUser||authUser.isAnonymous)return;if(profileUnsubscribe)profileUnsubscribe();
  profileUnsubscribe=db.collection('profiles').doc(authUser.uid).onSnapshot(snap=>{
    if(!snap.exists)return rejectAuthenticatedUser('Profil dostępu został usunięty.');
    const next={uid:snap.id,...snap.data()};
@@ -776,23 +779,21 @@ function authErrorMessage(e,guest=false){
    'auth/user-not-found':guest?'Konto gościa nie jest dostępne.':'Nieprawidłowy adres e-mail lub hasło.',
    'auth/user-disabled':'To konto zostało wyłączone w Firebase.',
    'auth/too-many-requests':'Firebase tymczasowo zablokował logowanie po zbyt wielu próbach. Odczekaj kilka minut i spróbuj ponownie.',
-   'auth/operation-not-allowed':'Logowanie Email/Password nie jest włączone w Firebase.',
+   'auth/operation-not-allowed':'Logowanie anonimowe nie jest włączone w Firebase. Administrator musi je włączyć w Firebase Authentication.',
    'auth/network-request-failed':'Błąd połączenia z Firebase. Sprawdź internet i spróbuj ponownie.',
    'auth/invalid-email':'Techniczny adres konta ma nieprawidłowy format.'
  };
  return messages[code]||`Nie udało się zalogować (${code||'nieznany błąd Firebase'}).`
 }
 async function loginGuest(){
- const password=guestPasswordInput.value;authError.textContent='';
- if(!password){authError.textContent='Wpisz hasło gościa.';guestPasswordInput.focus();return}
- guestLoginBtn.disabled=true;guestLoginBtn.textContent='Logowanie…';
+ authError.textContent='';
+ guestLoginBtn.disabled=true;guestLoginBtn.textContent='Łączenie…';
  try{
    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-   await auth.signInWithEmailAndPassword(GUEST_EMAIL,password);
-   guestPasswordInput.value=''
+   await auth.signInAnonymously();
  }catch(e){
    authError.textContent=authErrorMessage(e,true);
-   console.error('Firebase guest sign-in failed:',String(e&&e.code||''),e&&e.message)
+   console.error('Firebase anonymous guest sign-in failed:',String(e&&e.code||''),e&&e.message)
  }finally{guestLoginBtn.disabled=false;guestLoginBtn.textContent='Wejdź jako gość'}
 }
 async function sendPasswordReset(){
