@@ -120,6 +120,8 @@ service cloud.firestore {
           'yt',
           'ytId',
           'notes',
+          'roland',
+          'korg',
           'updatedBy',
           'updatedUid',
           'updatedAt'
