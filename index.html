@@ -1427,7 +1427,7 @@ function openEdit(id){
  songModal.dataset.waitlist='';songModal.dataset.editingWaitlist=editingWaitlist?'1':'';songModal.dataset.returnToWaitlist=returnToWaitlist?'1':'';statusInput.disabled=editingWaitlist||!isAdmin;
  editingId=id;modalTitle.textContent=editingWaitlist?'Edytuj propozycję':'Edytuj utwór';ytUrl.value=s.yt||'';artistInput.value=s.artist||'';titleInput.value=s.title||'';bpmInput.value=s.bpm||'';keyInput.value=s.key||'';bandKeyInput.value=s.bandKey||'';
  if(window.languageInput)languageInput.value=s.language==='PL'?'PL':'INNY';refreshVocalSelects(s.vocal||UNSPECIFIED_VOCAL,s.vocalAlt||'');vocalInput.value=s.vocal||UNSPECIFIED_VOCAL;vocalAltInput.value=s.vocalAlt||'';rolandInput.value=s.roland||'';korgInput.value=s.korg||'';statusInput.value=editingWaitlist?'':(s.status||'🟡 W przygotowaniu');notesInput.value=s.notes||'';
- if(returnToWaitlist)waitlistModal.classList.remove('open');songModal.classList.add('open')
+ if(returnToWaitlist)waitlistModal.classList.remove('open');if(app.classList.contains('right-open'))toggleRight();songModal.classList.add('open')
 }
 async function saveSong(){
  if(!userName){openUserModal();return}
