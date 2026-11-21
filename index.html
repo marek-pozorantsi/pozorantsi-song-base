@@ -544,6 +544,44 @@ body.band-click-mode{overflow:hidden}
   background:#152437;color:var(--t);font-size:13px;font-weight:750;
   min-height:36px;padding:7px 12px;cursor:pointer;
 }
+
+/* Android/mobile: the main song list belongs to the page, no nested scroll trap. */
+@media screen and (max-width:900px){
+  html{height:auto!important;min-height:100%;overflow-y:auto!important;overscroll-behavior-y:auto!important}
+  body:not(.drum-mode):not(.band-click-mode):not(.piano-mode){
+    height:auto!important;min-height:100vh!important;overflow-y:auto!important;
+    overflow-x:hidden!important;overscroll-behavior-y:auto!important
+  }
+  .app{display:block!important;height:auto!important;min-height:100dvh!important}
+  .app main{display:block!important;height:auto!important;min-height:0!important;overflow:visible!important}
+  .app main .songs{display:block!important;height:auto!important;max-height:none!important;
+    overflow:visible!important;flex:none!important;touch-action:pan-y!important}
+}
+/* Two compact jump controls to the left, existing three buttons on the right. */
+#setlistsModal .setlist-concert-song{
+ grid-template-columns:28px 28px minmax(0,1fr) 44px 65px 38px!important;gap:4px!important
+}
+#setlistsModal .setlist-jump-actions{
+ grid-column:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:5px;width:28px;min-width:28px
+}
+#setlistsModal .setlist-jump-actions button{
+ display:flex;align-items:center;justify-content:center;width:28px;height:32px;padding:0;
+ border:1px solid rgba(167,120,255,.55);border-radius:8px;background:rgba(124,60,255,.13);
+ color:#d5b9ff;font-size:18px;font-weight:900;cursor:pointer;touch-action:manipulation
+}
+#setlistsModal .setlist-jump-actions button:disabled,
+#setlistsModal .setlist-actions button:disabled,
+#setlistsModal .setlist-add-row button:disabled{opacity:.4;cursor:wait}
+#setlistsModal .setlist-concert-song>.setlist-patches{grid-column:3 / -1!important}
+@media screen and (max-width:540px){
+ #setlistsModal .setlist-concert-song{
+   grid-template-columns:26px 22px minmax(0,1fr) 33px 49px 33px!important;gap:3px!important
+ }
+ #setlistsModal .setlist-jump-actions{width:26px;min-width:26px}
+ #setlistsModal .setlist-jump-actions button{width:26px;height:33px}
+}
+
 </style>
 </head>
 <body>
@@ -1422,7 +1460,14 @@ async function restoreSong(id){if(!isAdmin)return alert('Tylko Marek.');await db
 async function hardDeleteSong(id){
  if(!isAdmin)return alert('Tylko Marek.');
  if(!confirm('Usunąć na stałe? Utwór zostanie również usunięty ze wszystkich setlist.'))return;
- for(const set of setlists.filter(s=>(s.songs||[]).includes(id)))await db.collection('setlists').doc(set.id).update({songs:(set.songs||[]).filter(x=>x!==id),updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+ for(const set of setlists.filter(s=>(s.songs||[]).includes(id))){
+  await db.runTransaction(async tx=>{
+   const ref=db.collection('setlists').doc(set.id),snap=await tx.get(ref);
+   if(!snap.exists)return;
+   const current=Array.isArray(snap.data().songs)?snap.data().songs:[];
+   if(current.includes(id))tx.update(ref,{songs:current.filter(x=>x!==id),updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  });
+ }
  await db.collection('songs').doc(id).delete();if(selectedId===id)selectedId=songs.find(x=>x.id!==id)?.id||null
 }
 async function addVocalist(){
@@ -1439,9 +1484,12 @@ async function removeVocalist(n){
 }
 async function restoreVocalist(n){if(!isAdmin)return;inactiveVocalNames=inactiveVocalNames.filter(v=>v!==n);await updateVocalists()}
 async function updateVocalists(){vocalNames=cleanVocalistList(vocalNames);inactiveVocalNames=cleanVocalistList(inactiveVocalNames);await db.collection('settings').doc('main').set({vocalists:vocalNames,inactiveVocalists:inactiveVocalNames,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
+const setlistBusy=new Set();
 let expandedSetlistId=null;
 function toggleSetlist(id){expandedSetlistId=expandedSetlistId===id?null:id;renderSetlists()}
 function renderSetlists(){
+ const modalScrollBox=setlistsModal.querySelector('.modal-box');
+ const savedScrollTop=modalScrollBox?.scrollTop||0;
  if(expandedSetlistId&&!setlists.some(x=>x.id===expandedSetlistId))expandedSetlistId=null;
  const h=setlists.map(s=>`<div class="listrow"><span>📋 ${esc(s.name)} <span style="color:var(--m)">(${(s.songs||[]).length})</span></span>${canManageSetlists()&&!s.guest?`<button onclick="deleteSetlist('${s.id}')">Usuń</button>`:''}</div>`).join('')||'<div style="color:var(--m);font-size:13px">Brak setlist.</div>';
  setlistsList.innerHTML=h;
@@ -1452,6 +1500,10 @@ function renderSetlists(){
   const rows=(s.songs||[]).map((id,idx)=>{
    const song=songs.find(x=>x.id===id);
    return song?`<div class="setlist-concert-song">
+    ${editable?`<div class="setlist-jump-actions">
+      <button type="button" title="Na samą górę" aria-label="Przenieś na samą górę" ${setlistBusy.has(s.id)?'disabled':''} onclick="moveSongInSetlist('${s.id}','${id}','top')">⇈</button>
+      <button type="button" title="Na sam dół" aria-label="Przenieś na sam dół" ${setlistBusy.has(s.id)?'disabled':''} onclick="moveSongInSetlist('${s.id}','${id}','bottom')">⇊</button>
+    </div>`:'<div class="setlist-jump-actions" aria-hidden="true"></div>'}
     <div class="setlist-no">${idx+1}</div>
     <div>
       <div class="setlist-song-main">${esc(song.title)}</div>
@@ -1460,9 +1512,9 @@ function renderSetlists(){
     <div class="setlist-bpm">${esc(song.bpm||'-')}<span>BPM</span></div>
     <div class="setlist-key">${esc(song.bandKey||song.key||'-')}<span>TONACJA</span></div>
     ${editable?`<div class="setlist-actions">
-      <button title="Wyżej" onclick="moveSongInSetlist('${s.id}','${id}',-1)">↑</button>
-      <button title="Niżej" onclick="moveSongInSetlist('${s.id}','${id}',1)">↓</button>
-      <button class="danger" title="Usuń" onclick="removeSongFromSetlist('${s.id}','${id}')">×</button>
+      <button type="button" title="Wyżej" ${setlistBusy.has(s.id)?'disabled':''} onclick="moveSongInSetlist('${s.id}','${id}',-1)">↑</button>
+      <button type="button" title="Niżej" ${setlistBusy.has(s.id)?'disabled':''} onclick="moveSongInSetlist('${s.id}','${id}',1)">↓</button>
+      <button type="button" class="danger" title="Usuń" ${setlistBusy.has(s.id)?'disabled':''} onclick="removeSongFromSetlist('${s.id}','${id}')">×</button>
     </div>`:''}
     <div class="setlist-patches">
       <div class="setlist-patch-entry"><span class="setlist-patch-label">ROLAND:</span><b>${esc(song.roland||'-')}</b></div>
@@ -1474,17 +1526,18 @@ function renderSetlists(){
   return `<div class="setlist-concert"><button type="button" class="setlist-toggle" aria-expanded="true" onclick="toggleSetlist('${s.id}')"><strong>${esc(s.name)}</strong><span>${(s.songs||[]).length} utw. ▲</span></button><div class="setlist-body">
     <div class="setlist-concert-head">
       <input value="${escAttr(s.name)}" ${editable?`onchange="renameSetlist('${s.id}',this.value)"`:'readonly'} style="width:55%;background:#040a12eb;color:var(--t);border:1px solid var(--b);border-radius:8px;padding:10px;font-size:18px;font-weight:900">
-      ${editable?`<button class="setlist-print-btn" onclick="saveSetlistNotice('${s.id}')">Zapisz</button>`:''}
+      ${editable?`<button class="setlist-print-btn" ${setlistBusy.has(s.id)?'disabled':''} onclick="saveSetlistNotice('${s.id}')">${setlistBusy.has(s.id)?'Zapisuję…':'Zapisz'}</button>`:''}
       <button class="setlist-print-btn" onclick="printSetlist('${s.id}')">Drukuj</button>
       ${editable?`<button class="setlist-delete-btn" onclick="deleteSetlist('${s.id}')">Usuń</button>`:''}
     </div>
     ${rows}
     ${editable?`<div class="setlist-add-row">
       <select id="addSong_${s.id}" class="filter-select">${options}</select>
-      <button class="top-btn" onclick="addSelectedSongToSetlist('${s.id}')">Dodaj</button>
+      <button class="top-btn" ${setlistBusy.has(s.id)?'disabled':''} onclick="addSelectedSongToSetlist('${s.id}')">Dodaj</button>
     </div>`:''}
    </div></div>`
- }).join('')||'<div style="color:var(--m);font-size:13px">Brak setlist.</div>'
+ }).join('')||'<div style="color:var(--m);font-size:13px">Brak setlist.</div>';
+ if(modalScrollBox)modalScrollBox.scrollTop=savedScrollTop;
 }
 function setlistVisibleVocals(set,song){const all=[song.vocal,song.vocalAlt].filter((v,i,a)=>v&&a.indexOf(v)===i);const exclude=(set.vocalExcluded||{})[song.id]||[];return all.filter(v=>!exclude.includes(v))}
 async function toggleSetlistVocal(setId,songId,vocal){
@@ -1497,7 +1550,7 @@ async function toggleSetlistVocal(setId,songId,vocal){
  set.vocalExcluded=excluded;renderSetlists();
  await db.collection('setlists').doc(setId).update({vocalExcluded:excluded,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
 }
-function saveSetlistNotice(setId){alert('Setlista jest zapisana w Firebase.')}
+function saveSetlistNotice(setId){alert(setlistBusy.has(setId)?'Trwa zapisywanie zmian.':'Setlista jest zapisana w Firebase.')}
 function printSetlist(setId){
  const set=setlists.find(s=>s.id===setId);if(!set)return;
  const title=(set.name||'Setlista').replace(/\s+/g,' ').trim();
@@ -1541,14 +1594,51 @@ function printSetlist(setId){
  window.print()
 }
 async function renameSetlist(id,name){if(!requireSetlistEdit())return;name=(name||'').trim();if(!name)return;await db.collection('setlists').doc(id).update({name,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}
-async function addSelectedSongToSetlist(setId){if(!requireSetlistEdit())return;const sel=document.getElementById('addSong_'+setId);if(!sel||!sel.value)return;const set=setlists.find(s=>s.id===setId);const arr=[...(set?.songs||[])];if(!arr.includes(sel.value))arr.push(sel.value);if(set){set.songs=arr;renderSetlists()}await db.collection('setlists').doc(setId).update({songs:arr,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}
-async function removeSongFromSetlist(setId,songId){if(!requireSetlistEdit())return;const set=setlists.find(s=>s.id===setId);if(!set)return;if(!confirm('Usunąć utwór z setlisty?'))return;const arr=(set.songs||[]).filter(id=>id!==songId);set.songs=arr;renderSetlists();await db.collection('setlists').doc(setId).update({songs:arr,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}
-async function moveSongInSetlist(setId,songId,dir){if(!requireSetlistEdit())return;const set=setlists.find(s=>s.id===setId);if(!set)return;const arr=[...(set.songs||[])];const i=arr.indexOf(songId);const j=i+dir;if(i<0||j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];set.songs=arr;renderSetlists();await db.collection('setlists').doc(setId).update({songs:arr,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}
+// Transactions protect against lost updates when two members edit the same setlist.
+// Only one local operation per setlist may be active at a time.
+async function changeSetlistSongs(setId,makeNext){
+ if(!requireSetlistEdit()||setlistBusy.has(setId))return;
+ setlistBusy.add(setId);renderSetlists();
+ try{
+  const ref=db.collection('setlists').doc(setId);
+  await db.runTransaction(async tx=>{
+   const snap=await tx.get(ref);
+   if(!snap.exists)throw new Error('Ta setlista już nie istnieje.');
+   const before=Array.isArray(snap.data().songs)?snap.data().songs:[];
+   const next=makeNext([...before]);
+   if(!Array.isArray(next)||(next.length===before.length&&next.every((id,i)=>id===before[i])))return;
+   tx.update(ref,{songs:next,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  });
+ }catch(e){
+  console.error('Błąd zapisu setlisty:',e);
+  alert('Nie zapisano zmiany w setliście. Sprawdź połączenie i spróbuj ponownie. '+(e?.message||''));
+ }finally{setlistBusy.delete(setId);renderSetlists()}
+}
+async function addSelectedSongToSetlist(setId){
+ const sel=document.getElementById('addSong_'+setId),songId=sel?.value;
+ if(!songId)return;
+ await changeSetlistSongs(setId,arr=>{if(!arr.includes(songId))arr.push(songId);return arr});
+}
+async function removeSongFromSetlist(setId,songId){
+ if(!requireSetlistEdit()||setlistBusy.has(setId))return;
+ if(!confirm('Usunąć utwór z setlisty?'))return;
+ await changeSetlistSongs(setId,arr=>arr.filter(id=>id!==songId));
+}
+async function moveSongInSetlist(setId,songId,dir){
+ await changeSetlistSongs(setId,arr=>{
+  const i=arr.indexOf(songId);
+  if(i<0)return arr;
+  const j=dir==='top'?0:dir==='bottom'?arr.length-1:i+dir;
+  if(j<0||j>=arr.length||i===j)return arr;
+  arr.splice(j,0,arr.splice(i,1)[0]);
+  return arr;
+ });
+}
 function openSetlistsModal(){expandedSetlistId=null;setlistsModal.classList.add('open');updateAdminUi();renderSetlists()}
 async function addSetlist(){if(!requireSetlistEdit())return;const n=(newSetlistInput.value||'').trim();if(!n)return;newSetlistInput.value='';await db.collection('setlists').add({name:n,songs:[],createdBy:userName,createdAt:firebase.firestore.FieldValue.serverTimestamp(),updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}
 async function addSetlistFromModal(){if(!requireSetlistEdit())return;const n=(newSetlistInputModal.value||'').trim();if(!n)return;newSetlistInputModal.value='';await db.collection('setlists').add({name:n,songs:[],createdBy:userName,createdAt:firebase.firestore.FieldValue.serverTimestamp()})}
 async function deleteSetlist(id){if(!requireSetlistEdit())return;if(confirm('Usunąć setlistę?'))await db.collection('setlists').doc(id).delete()}
-async function addSongToSetlist(id){if(!requireSetlistEdit())return;if(!setlists.length){alert('Najpierw utwórz setlistę.');return}const names=setlists.map((s,i)=>`${i+1}. ${s.name}`).join('\n');const c=prompt('Do której setlisty dodać?\n\n'+names+'\n\nWpisz numer:');const idx=Number(c)-1;if(idx<0||idx>=setlists.length)return;const set=setlists[idx],arr=[...(set.songs||[])];if(!arr.includes(id))arr.push(id);await db.collection('setlists').doc(set.id).update({songs:arr,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})}
+async function addSongToSetlist(id){if(!requireSetlistEdit())return;if(!setlists.length){alert('Najpierw utwórz setlistę.');return}const names=setlists.map((s,i)=>`${i+1}. ${s.name}`).join('\n');const c=prompt('Do której setlisty dodać?\n\n'+names+'\n\nWpisz numer:');const idx=Number(c)-1;if(idx<0||idx>=setlists.length)return;await changeSetlistSongs(setlists[idx].id,arr=>{if(!arr.includes(id))arr.push(id);return arr})}
 async function analyzeLink(){const url=ytUrl.value.trim(),id=youtubeId(url);if(!id){alert('Wklej poprawny link YouTube.');return}try{const res=await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${id}`);const data=await res.json();const p=parseTitle(data.title||'');artistInput.value=p.artist||'';titleInput.value=p.title||data.title||'';if(window.languageInput){const gl=guessLanguageFromText((p.artist||'')+' '+(p.title||data.title||''));if(gl==='PL')languageInput.value='PL';}}catch{titleInput.value='Utwór z YouTube'}}
 function guessLanguageFromText(txt){
  txt=String(txt||'');
