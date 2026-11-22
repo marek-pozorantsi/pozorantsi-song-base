@@ -116,6 +116,7 @@ service cloud.firestore {
           'key',
           'bandKey',
           'vocal',
+          'vocalAlt',
           'language',
           'yt',
           'ytId',
