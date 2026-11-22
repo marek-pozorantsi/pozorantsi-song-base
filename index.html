@@ -582,6 +582,18 @@ body.band-click-mode{overflow:hidden}
  #setlistsModal .setlist-jump-actions button{width:26px;height:33px}
 }
 
+
+/* Czytelny podgląd setlisty na całym ekranie */
+.setlist-preview{position:fixed;inset:0;z-index:5000;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 16px) calc(env(safe-area-inset-right,0px) + 20px) calc(env(safe-area-inset-bottom,0px) + 16px) calc(env(safe-area-inset-left,0px) + 20px);background:radial-gradient(circle at 50% 0%,#18233b 0,#07111f 52%,#03070d 100%);color:#fff}
+.setlist-preview-header{display:flex;align-items:center;justify-content:space-between;gap:14px;width:min(1180px,100%);margin:0 auto 8px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.16)}
+.setlist-preview-name{min-width:0;font-size:clamp(24px,4vw,40px);line-height:1.08;font-weight:900;overflow-wrap:anywhere}
+.setlist-preview-close{flex:0 0 auto;min-height:46px;padding:0 16px;border:1px solid rgba(255,255,255,.24);border-radius:11px;background:#101a28;color:#fff;font-size:14px;font-weight:900;cursor:pointer}
+.setlist-preview-list{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;width:min(1180px,100%);margin:0 auto}
+.setlist-preview-item{padding:clamp(12px,2.2vh,24px) 0;border-bottom:1px solid rgba(255,255,255,.17)}
+.setlist-preview-song-title{font-size:clamp(34px,6.5vw,70px);line-height:1.06;font-weight:950;letter-spacing:-.025em;overflow-wrap:anywhere}
+.setlist-preview-vocal{margin-top:8px;color:#ffd84d;font-size:clamp(19px,3vw,30px);line-height:1.15;font-weight:800;overflow-wrap:anywhere}
+.setlist-preview-empty{padding:28px 0;color:#a8b3c2;font-size:24px;font-weight:700}
+@media(max-width:600px){.setlist-preview{padding-left:14px;padding-right:14px}.setlist-preview-header{gap:8px;padding-bottom:10px}.setlist-preview-name{font-size:clamp(22px,6vw,32px)}.setlist-preview-close{min-height:44px;padding:0 11px;font-size:12px}.setlist-preview-item{padding:14px 0}.setlist-preview-song-title{font-size:clamp(32px,8vw,48px)}.setlist-preview-vocal{font-size:clamp(18px,4.5vw,23px)}}
 </style>
 </head>
 <body>
@@ -1528,6 +1540,7 @@ function renderSetlists(){
       <input value="${escAttr(s.name)}" ${editable?`onchange="renameSetlist('${s.id}',this.value)"`:'readonly'} style="width:55%;background:#040a12eb;color:var(--t);border:1px solid var(--b);border-radius:8px;padding:10px;font-size:18px;font-weight:900">
       ${editable?`<button class="setlist-print-btn" ${setlistBusy.has(s.id)?'disabled':''} onclick="saveSetlistNotice('${s.id}')">${setlistBusy.has(s.id)?'Zapisuję…':'Zapisz'}</button>`:''}
       <button class="setlist-print-btn" onclick="printSetlist('${s.id}')">Drukuj</button>
+      <button class="setlist-print-btn" onclick="previewSetlist('${s.id}')">Podgląd</button>
       ${editable?`<button class="setlist-delete-btn" onclick="deleteSetlist('${s.id}')">Usuń</button>`:''}
     </div>
     ${rows}
@@ -1549,6 +1562,26 @@ async function toggleSetlistVocal(setId,songId,vocal){
  else return;
  set.vocalExcluded=excluded;renderSetlists();
  await db.collection('setlists').doc(setId).update({vocalExcluded:excluded,updatedBy:userName,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+}
+function previewSetlist(setId){
+ const set=setlists.find(s=>s.id===setId);if(!set)return;
+ const rows=(set.songs||[]).map(id=>{
+  const song=songs.find(x=>x.id===id);if(!song)return'';
+  const vocals=setlistVisibleVocals(set,song).join(' / ')||'-';
+  return `<div class="setlist-preview-item"><div class="setlist-preview-song-title">${esc(song.title||'-')}</div><div class="setlist-preview-vocal">${esc(vocals)}</div></div>`;
+ }).join('')||'<div class="setlist-preview-empty">Brak utworów w setliście.</div>';
+ let overlay=document.getElementById('setlistPreview');
+ if(!overlay){overlay=document.createElement('div');overlay.id='setlistPreview';overlay.className='setlist-preview';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');document.body.appendChild(overlay)}
+ window.setlistPreviewReturnFocus=document.activeElement;
+ overlay.innerHTML=`<div class="setlist-preview-header"><div class="setlist-preview-name">${esc(set.name||'Setlista')}</div><button type="button" class="setlist-preview-close" onclick="closeSetlistPreview()">Zamknij ✕</button></div><div class="setlist-preview-list">${rows}</div>`;
+ document.addEventListener('keydown',handleSetlistPreviewKeydown);
+ overlay.querySelector('.setlist-preview-close')?.focus();
+}
+function handleSetlistPreviewKeydown(event){if(event.key==='Escape')closeSetlistPreview()}
+function closeSetlistPreview(){
+ document.getElementById('setlistPreview')?.remove();
+ document.removeEventListener('keydown',handleSetlistPreviewKeydown);
+ const trigger=window.setlistPreviewReturnFocus;window.setlistPreviewReturnFocus=null;if(trigger?.isConnected)trigger.focus()
 }
 function saveSetlistNotice(setId){alert(setlistBusy.has(setId)?'Trwa zapisywanie zmian.':'Setlista jest zapisana w Firebase.')}
 function printSetlist(setId){
