@@ -728,7 +728,7 @@ body.band-click-mode{overflow:hidden}
 </div>
 <div class="modal-actions"><button class="top-btn" onclick="userManagerModal.classList.remove('open')">Zamknij</button></div></div></div>
 <div id="miniVideo"><div class="yt-head"><div><div class="yt-title" id="ytModalTitle">YouTube</div><div class="yt-sub" id="ytModalArtist">Pozorantsi</div></div><div style="display:flex;gap:8px"><a id="ytFallbackLinkTop" class="yt-link" target="_blank">Nowa karta</a><button class="yt-close" onclick="toggleMiniVideo(false)">Zamknij</button></div></div><div style="position:relative"><div id="youtubePlayer"></div><button id="safeYoutubeCloseBtn" onclick="toggleMiniVideo(false)">Zamknij YouTube</button><div id="ytFallback" style="display:none;position:absolute;inset:0;background:#000000db;color:white;padding:18px;text-align:center;font-size:14px;align-items:center;justify-content:center;flex-direction:column;gap:12px;border-radius:12px"><div>YouTube zablokował osadzony player.</div><a id="ytFallbackLink" target="_blank" style="color:#a778ff;font-weight:800">Otwórz w YouTube</a></div></div></div>
-<div class="modal" id="songModal"><div class="modal-box"><h2 id="modalTitle">Dodaj utwór</h2><label>Link YouTube</label><input id="ytUrl" placeholder="Wklej link z YouTube..."><div class="modal-actions" style="justify-content:flex-start;margin-top:0;margin-bottom:8px"><button class="top-btn" onclick="analyzeLink()">Pobierz tytuł z YouTube</button></div><div class="form-grid"><div><label>Wykonawca</label><input id="artistInput"></div><div><label>Tytuł</label><input id="titleInput"></div><div><label>BPM</label><input id="bpmInput" type="number"></div><div><label>Tonacja oryginalna</label><input id="keyInput" placeholder="np. Fm"></div><div><label>Tonacja Pozorantsi</label><input id="bandKeyInput" placeholder="np. Em"></div><div><label>Język utworu</label><select id="languageInput"><option value="INNY">INNY</option><option value="PL">PL</option></select></div><div><label>Wokal 1</label><select id="vocalInput"></select></div><div><label>Wokal 2</label><select id="vocalAltInput"></select></div><div><label>ROLAND</label><input id="rolandInput" type="text" inputmode="text" maxlength="30" size="30" autocomplete="off" placeholder="Do 30 znaków"></div><div><label>KORG</label><input id="korgInput" type="text" inputmode="text" maxlength="30" size="30" autocomplete="off" placeholder="Do 30 znaków"></div></div><label>Status</label><select id="statusInput"></select><label>Notatki</label><textarea id="notesInput" rows="3"></textarea><div class="modal-actions"><button class="top-btn" onclick="closeModal()">Anuluj</button><button class="add-btn" style="padding:0 20px" onclick="saveSong()">Zapisz</button></div></div></div>
+<div class="modal" id="songModal"><div class="modal-box"><h2 id="modalTitle">Dodaj utwór</h2><label>Link YouTube</label><input id="ytUrl" placeholder="Wklej link z YouTube..."><div class="modal-actions" style="justify-content:flex-start;margin-top:0;margin-bottom:8px"><button class="top-btn" onclick="analyzeLink()">Pobierz tytuł z YouTube</button></div><div class="form-grid"><div><label>Wykonawca</label><input id="artistInput"></div><div><label>Tytuł</label><input id="titleInput"></div><div><label>BPM</label><input id="bpmInput" type="number"></div><div><label>Tonacja oryginalna</label><input id="keyInput" placeholder="np. Fm"></div><div><label>Tonacja Pozorantsi</label><input id="bandKeyInput" placeholder="np. Em"></div><div><label>Język utworu</label><select id="languageInput"><option value="INNY">INNY</option><option value="PL">PL</option></select></div><div><label>Wokal 1</label><select id="vocalInput"></select></div><div><label>Wokal 2</label><select id="vocalAltInput"></select></div><div><label>ROLAND</label><input id="rolandInput" type="text" inputmode="text" maxlength="30" size="30" autocomplete="off" placeholder="Do 30 znaków"></div><div><label>KORG</label><input id="korgInput" type="text" inputmode="text" maxlength="30" size="30" autocomplete="off" placeholder="Do 30 znaków"></div></div><label>Status</label><select id="statusInput"></select><label>Notatki</label><textarea id="notesInput" rows="3"></textarea><div class="modal-actions"><button class="top-btn" onclick="closeModal()">Anuluj</button><button id="saveSongBtn" class="add-btn" style="padding:0 20px" onclick="saveSong()">Zapisz</button></div></div></div>
 <div class="modal" id="setlistsModal"><div class="modal-box" style="width:780px"><div class="setlists-modal-header"><h2>Setlisty</h2><button type="button" class="setlists-close-top" aria-label="Zamknij setlisty" onclick="setlistsModal.classList.remove('open')">✕ Zamknij</button></div><p id="setlistsHelp" style="color:var(--m);font-size:14px;line-height:1.5;margin-top:0">Setlisty są wspólne dla zespołu.</p><div class="addrow" id="setlistModalCreate"><input id="newSetlistInputModal" placeholder="Nazwa nowej setlisty..."><button onclick="addSetlistFromModal()">+</button></div><div id="setlistsModalList"></div><div class="modal-actions"><button class="top-btn" onclick="setlistsModal.classList.remove('open')">Zamknij</button></div></div></div>
 <div class="modal" id="waitlistModal"><div class="modal-box waitlist-box" style="width:1040px"><h2>Poczekalnia</h2><p style="color:var(--m);font-size:14px;line-height:1.5;margin-top:0">Propozycje utworów od zespołu. Każdy może dodać i odsłuchać propozycję.</p><div class="modal-actions" style="justify-content:flex-start;margin-bottom:12px"><button class="wait-btn" style="padding:10px 16px" onclick="openWaitlistAdd()">＋ Dodaj do poczekalni</button><button id="waitlistJulyAuthorFixBtn" class="top-btn" style="display:none;padding:10px 16px" onclick="fixJulyWaitlistAuthors()">Popraw autorów z lipca</button></div><div class="waitlist-filters"><select id="waitDateSort" onchange="renderWaitlist()"><option value="new">Data dodania: najnowsze</option><option value="old">Data dodania: najstarsze</option></select><select id="waitUserFilter" onchange="renderWaitlist()"><option value="">Kto dodał: wszyscy</option></select><select id="waitBpmSort" onchange="renderWaitlist()"><option value="">BPM: bez sortowania</option><option value="asc">BPM rosnąco</option><option value="desc">BPM malejąco</option></select><select id="waitLanguageFilter" onchange="renderWaitlist()"><option value="">Język: wszystkie</option><option value="PL">Tylko PL</option></select></div><div id="waitlistList"></div><div class="modal-actions"><button class="top-btn" onclick="waitlistModal.classList.remove('open')">Zamknij</button></div></div></div>
 <script>
@@ -1446,19 +1446,54 @@ async function saveSong(){
  if(editingId&&!canEditSongs())return alert('Twoja rola nie pozwala edytować utworów.');
  if(!editingId&&songModal.dataset.waitlist==='1'&&!canUseWaitlist())return alert('Twoja rola nie pozwala dodawać propozycji.');
  if(!editingId&&songModal.dataset.waitlist!=='1'&&!requireAdminMain())return;
- const id=youtubeId(ytUrl.value.trim());
- if(!id||!artistInput.value.trim()||!titleInput.value.trim()){alert('Uzupełnij poprawny link YouTube, wykonawcę i tytuł.');return}
- const duplicate=songs.find(s=>s.ytId===id&&s.id!==editingId);
- if(duplicate&&!confirm(`Ten film jest już zapisany jako „${duplicate.artist} — ${duplicate.title}”. Zapisać mimo to?`))return;
  const existing=editingId?songs.find(x=>x.id===editingId):null;
+ if(editingId&&!existing)return alert('Nie znaleziono edytowanego utworu. Otwórz go ponownie.');
+ const url=ytUrl.value.trim(),linkChanged=!existing||url!==String(existing.yt||'').trim();
+ const id=linkChanged?youtubeId(url):(existing.ytId||youtubeId(url)||'');
+ if(!artistInput.value.trim()||!titleInput.value.trim()||(linkChanged&&!id)){
+   alert('Uzupełnij wykonawcę i tytuł oraz poprawny link YouTube (jeśli go zmieniasz).');return
+ }
+ const duplicate=linkChanged?songs.find(s=>s.ytId===id&&s.id!==editingId):null;
+ if(duplicate&&!confirm(`Ten film jest już zapisany jako „${duplicate.artist} — ${duplicate.title}”. Zapisać mimo to?`))return;
  const editingWaitlist=songModal.dataset.editingWaitlist==='1';
- const obj={artist:artistInput.value.trim(),title:titleInput.value.trim(),bpm:Number(bpmInput.value||0),key:keyInput.value.trim(),bandKey:bandKeyInput.value.trim(),vocal:vocalInput.value||UNSPECIFIED_VOCAL,vocalAlt:vocalAltInput.value!==vocalInput.value?vocalAltInput.value:'',roland:rolandInput.value.trim().slice(0,30),korg:korgInput.value.trim().slice(0,30),language:(window.languageInput?(languageInput.value==='PL'?'PL':'INNY'):'INNY'),status:editingWaitlist?(existing?.status||'⏳ Poczekalnia'):((editingId&&!isAdmin&&existing)?existing.status:statusInput.value),date:editingId?(existing?.date||today()):today(),yt:ytUrl.value.trim(),ytId:id,notes:notesInput.value.trim(),pendingDelete:editingId?(existing?.pendingDelete||false):false,updatedBy:userName,updatedUid:authUser.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+ const obj={artist:artistInput.value.trim(),title:titleInput.value.trim(),bpm:Number(bpmInput.value||0),key:keyInput.value.trim(),bandKey:bandKeyInput.value.trim(),vocal:vocalInput.value||UNSPECIFIED_VOCAL,vocalAlt:vocalAltInput.value!==vocalInput.value?vocalAltInput.value:'',roland:rolandInput.value.trim().slice(0,30),korg:korgInput.value.trim().slice(0,30),language:(window.languageInput?(languageInput.value==='PL'?'PL':'INNY'):'INNY'),status:editingWaitlist?(existing?.status||'⏳ Poczekalnia'):((editingId&&!isAdmin&&existing)?existing.status:statusInput.value),date:editingId?(existing?.date||today()):today(),yt:url,ytId:id,notes:notesInput.value.trim(),pendingDelete:editingId?(existing?.pendingDelete||false):false,updatedBy:userName,updatedUid:authUser.uid,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
  if(!editingId&&songModal.dataset.waitlist==='1')obj.status='⏳ Poczekalnia';
- if((obj.status.includes('Gotowy')||obj.status.includes('Hit'))&&(!obj.bpm||(!obj.key&&!obj.bandKey))&&!confirm('Utwór jest oznaczony jako gotowy, ale brakuje BPM lub tonacji. Zapisać mimo to?'))return;
- if(obj.vocal&&obj.vocal!==UNSPECIFIED_VOCAL&&!vocalNames.includes(obj.vocal)&&isAdmin){vocalNames.push(obj.vocal);await updateVocalists()}
- if(editingId)await db.collection('songs').doc(editingId).update(obj);
- else{obj.addedBy=userName;obj.addedUid=authUser.uid;obj.createdAt=firebase.firestore.FieldValue.serverTimestamp();const ref=await db.collection('songs').add(obj);selectedId=ref.id}
- closeModal()
+ const musicalDataChanged=!existing||obj.status!==existing.status||obj.bpm!==Number(existing.bpm||0)||obj.key!==String(existing.key||'')||obj.bandKey!==String(existing.bandKey||'');
+ if(musicalDataChanged&&(obj.status.includes('Gotowy')||obj.status.includes('Hit'))&&(!obj.bpm||(!obj.key&&!obj.bandKey))&&!confirm('Utwór jest oznaczony jako gotowy, ale brakuje BPM lub tonacji. Zapisać mimo to?'))return;
+ const saveBtn=document.getElementById('saveSongBtn');
+ if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Zapisywanie…'}
+ try{
+   if(obj.vocal&&obj.vocal!==UNSPECIFIED_VOCAL&&!vocalNames.includes(obj.vocal)&&isAdmin){vocalNames.push(obj.vocal);await updateVocalists()}
+   if(editingId){
+     // Aktualizuj tylko faktycznie zmienione pola. Starsze utwory nie muszą mieć wszystkich pól,
+     // a reguły Firebase zabraniają członkom zmieniania statusu, daty i flag administracyjnych.
+     const fields=['artist','title','bpm','key','bandKey','vocal','vocalAlt','roland','korg','language','yt','ytId','notes'];
+     if(isAdmin)fields.push('status');
+     const changes={};
+     for(const field of fields){
+       const next=obj[field],previous=existing[field];
+       if(previous===next)continue;
+       if(previous==null&&(next===''||(field==='bpm'&&next===0)||(field==='language'&&next==='INNY')))continue;
+       changes[field]=next;
+     }
+     if(Object.keys(changes).length){
+       changes.updatedBy=userName;changes.updatedUid=authUser.uid;changes.updatedAt=firebase.firestore.FieldValue.serverTimestamp();
+       await db.collection('songs').doc(editingId).update(changes);
+     }
+   }else{
+     obj.addedBy=userName;obj.addedUid=authUser.uid;obj.createdAt=firebase.firestore.FieldValue.serverTimestamp();
+     const ref=await db.collection('songs').add(obj);selectedId=ref.id
+   }
+   closeModal()
+ }catch(error){
+   console.error('Błąd zapisu utworu:',error);
+   const code=String(error?.code||'');
+   if(code.includes('permission-denied'))alert('Firebase odmówił zapisu z powodu uprawnień. Twoje zmiany nie zostały zapisane. Zgłoś administratorowi ten komunikat: '+code);
+   else if(code.includes('unavailable')||code.includes('network'))alert('Nie udało się połączyć z bazą Firebase. Sprawdź internet i spróbuj ponownie. Formularz i poprawki pozostają otwarte.');
+   else alert('Nie udało się zapisać utworu. Formularz pozostał otwarty. '+(code||String(error?.message||'Nieznany błąd')));
+ }finally{
+   if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Zapisz'}
+ }
 }
 async function requestDeleteSong(id){
  if(!authUser)return authModal.classList.add('open');
